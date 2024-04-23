@@ -1,0 +1,40 @@
+.form {
+    border-radius: 4px;
+    border: 2px solid gray;
+    padding: 15px;
+    margin: 0 auto;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.container-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.btnEnviar {
+    width: 40%;
+    font-size: 16px;
+    border: 1px solid #004853;
+    border-radius: 5px;
+    background-color: #004853;
+    color: white;
+}
+
+.btnEnviar:hover {
+    border: 1px solid #007e80;
+    border-radius: 5px;
+    background-color: #007e80;
+    color: white;
+}
+
+.container-back {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    margin: 0 auto;
+    width: 80%;
+}

@@ -1,0 +1,15 @@
+/* Estilos para alternar el color de fondo de las filas */
+.table-striped tbody tr:nth-child(odd) {
+    background-color: #42566d;
+    /* Color de fondo para las filas impares */
+}
+
+.table-striped tbody tr:nth-child(odd) td {
+    color: white;
+    /* Cambia el color del texto en las filas impares */
+}
+
+.table-striped tbody tr:nth-child(even) {
+    background-color: white;
+    /* Color de fondo para las filas pares */
+}

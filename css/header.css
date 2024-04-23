@@ -1,0 +1,26 @@
+.nav_teca {
+    height: 100px;
+}
+
+.navbar-text {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.p-usr {
+    padding: 15px;
+    color: white;
+}
+
+.btn-out {
+    width: auto;
+    height: 40px;
+    background-color: aliceblue;
+}
+
+.btn-out:hover {
+    background-color: #9e0004;
+    color: white;
+}
