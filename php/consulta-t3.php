@@ -22,9 +22,9 @@ if ($conn->connect_error) {
     die("Error de conexión: " . $conn->connect_error);
 }
 
-// Consultar los registros de la tabla Datos Generales
+// Consultar los registros de la tabla Resguardante
 $sql = "SELECT ID_DatosGenerales, Autores, ObjetoObra, Ubicacion, NoInventario, NoVale,
-                FechaPrestamo, Caracteristicas, Observaciones, ImagenOficioVale FROM DatosGenerales";
+FechaPrestamo, Caracteristicas, Observaciones, ImagenOficioVale FROM DatosGenerales";
 $result = $conn->query($sql);
 
 // Cerrar la conexión a la base de datos
@@ -37,23 +37,22 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cambios Datos Generales</title>
+    <title>Consultas Datos Generales</title>
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" href="../css/tablas.css">
 </head>
 
 <body>
     <?php
-    $pageTitle = "Cambios Datos Generales";
+    $pageTitle = "Consultas Datos Generales";
     include 'header.php';
     echo '<br>';
-    echo '<h1 class="text-center">Cambios de Datos Generales</h1>';
+    echo '<h1 class="text-center">Consultas de Datos Generales</h1>';
     ?>
 
     <div class="container-back">
         <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
     </div>
-
 
     <div class="container mt-5">
         <table class="table table-striped">
@@ -87,11 +86,10 @@ $conn->close();
                         echo "<td>" . $row["Caracteristicas"] . "</td>";
                         echo "<td>" . $row["Observaciones"] . "</td>";
                         echo "<td>" . $row["ImagenOficioVale"] . "</td>";
-                        echo "<td><a href='t3/procesar_cambios-t3.php?id=" . $row["ID_DatosGenerales"] . "' class='btn btn-primary'>Cambiar</a></td>";
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='5'>No hay registros</td></tr>";
+                    echo "<tr><td colspan='4'>No hay registros</td></tr>";
                 }
                 ?>
             </tbody>
@@ -103,6 +101,7 @@ $conn->close();
             window.history.back();
         }
     </script>
+
 </body>
 
 </html>
