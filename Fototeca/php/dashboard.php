@@ -27,7 +27,7 @@ error_log('Tipo de usuario: ' . $_SESSION['tipoUsuario']);
 
     <br>
 
-    <?php include 'menu-t1.php'; ?>
+    <?php include 'menu.php'; ?>
 
     <!-- Otro contenido del dashboard -->
 
