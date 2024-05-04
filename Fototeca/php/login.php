@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $servername = "localhost";
     $db_username = "root";
     $db_password = "Sandia2016.!";
-    $dbname = "fototeca_ob_uaa";
+    $dbname = "fototeca_uaa";
 
     $conn = new mysqli($servername, $db_username, $db_password, $dbname);
 
@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($_SESSION['tipoUsuario'] == "Admin") {
             header("Location: dashboard-admin.php"); // Redireccionar al dashboard admin
             exit();
-        } elseif ($_SESSION['tipoUsuario'] == "Arte") {
+        } elseif ($_SESSION['tipoUsuario'] == "General") {
             header("Location: dashboard.php"); // Redireccionar al dashboard
             exit();
         }
@@ -112,7 +112,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (errorAlert) {
                 errorAlert.style.display = "none";
             }
-        }, 5000); // 5000 milisegundos = 5 segundos
+        }, 5000);
     </script>
 
 </body>

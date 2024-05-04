@@ -9,7 +9,7 @@ CREATE TABLE Usuarios (
     TipoUsuario ENUM('Admin', 'General') NOT NULL
 );
 
-CREATE TABLE UserLogs (
+CREATE TABLE UserLogs ( 
     ID_Log INT PRIMARY KEY AUTO_INCREMENT,
     ID_Usuario INT,
     FechaHora DATETIME NOT NULL,
@@ -169,6 +169,9 @@ WHERE ST.ID_Tecnica = 1; -- Cambia 1 por el ID_Tecnica específico que deseas co
 
 ALTER TABLE Usuarios
 MODIFY COLUMN TipoUsuario ENUM('General', 'Admin') NOT NULL;
+
+-- Admin
+INSERT INTO Usuarios (Usuario, Contraseña, TipoUsuario) VALUES ('admin', '1235', 'Admin');
 
 
 
