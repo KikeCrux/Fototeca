@@ -33,7 +33,7 @@ CREATE TABLE SeccionTecnica (
 CREATE TABLE Clave (
     ID_Cultural INT PRIMARY KEY AUTO_INCREMENT,
     ID_Tecnica INT,
-    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica)
+    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica) ON DELETE CASCADE
 );
 
 -- Tabla Datacion
@@ -42,7 +42,7 @@ CREATE TABLE Datacion (
     ID_Tecnica INT,
     FechaAsunto DATE,
     FechaToma DATE,
-    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica)
+    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica)O N DELETE CASCADE
 );
 
 -- Tabla UbicacionGeografica
@@ -51,7 +51,7 @@ CREATE TABLE UbicacionGeografica (
     ID_Tecnica INT,
     LugarAsunto VARCHAR(100),
     LugarToma VARCHAR(100),
-    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica)
+    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica) ON DELETE CASCADE
 );
 
 -- Tabla Epocario
@@ -59,7 +59,7 @@ CREATE TABLE Epocario (
     ID_Epoca INT PRIMARY KEY AUTO_INCREMENT,
     ID_Tecnica INT,
     Epoca VARCHAR(100),
-    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica)
+    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica) ON DELETE CASCADE
 );
 
 -- Tabla Autoria
@@ -71,7 +71,7 @@ CREATE TABLE Autoria (
     AgenciaEstudio VARCHAR(100),
     EditorColeccionista VARCHAR(100),
     Lema VARCHAR(100),
-    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica)
+    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica) ON DELETE CASCADE
 );
 
 -- Tabla Indicativo
@@ -84,7 +84,7 @@ CREATE TABLE Indicativo (
     Etiqueta VARCHAR(100),
     Imprenta VARCHAR(100),
     Otro VARCHAR(100),
-    FOREIGN KEY (ID_Autoria) REFERENCES Autoria(ID_Autoria)
+    FOREIGN KEY (ID_Autoria) REFERENCES Autoria(ID_Autoria) ON DELETE CASCADE
 );
 
 -- Tabla Denominacion
@@ -94,7 +94,7 @@ CREATE TABLE Denominacion (
     TituloOrigen VARCHAR(255),
     TituloCatalografico VARCHAR(255),
     TituloSerie VARCHAR(255),
-    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica)
+    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica) ON DELETE CASCADE
 );
 
 -- Tabla Descriptores
@@ -103,7 +103,7 @@ CREATE TABLE Descriptores (
     ID_Tecnica INT,
     TemaPrincipal VARCHAR(255),
     Descriptores TEXT,
-    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica)
+    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica) ON DELETE CASCADE
 );
 
 -- Tabla Protagonistas
@@ -111,7 +111,7 @@ CREATE TABLE Protagonistas (
     ID_Protagonistas INT PRIMARY KEY AUTO_INCREMENT,
     ID_Tecnica INT,
     Personajes TEXT,
-    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica)
+    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica) ON DELETE CASCADE
 );
 
 -- Tabla Observaciones
@@ -123,7 +123,7 @@ CREATE TABLE Observaciones (
     Anotaciones TEXT,
     NumerosInterseccion TEXT,
     DocumentacionAsociada TEXT,
-    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica)
+    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica) ON DELETE CASCADE
 );
 
 -- Desarrollador
