@@ -2,14 +2,14 @@
 session_start();
 
 // Verificar si el usuario está autenticado
-if (!isset($_SESSION['username'])) {
+#if (!isset($_SESSION['username'])) {
     // Si no está autenticado, redirigirlo a la página de inicio de sesión
-    header("Location: login.php");
-    exit();
-}
+   # header("Location: login.php");
+   # exit();
+#}
 
 // Si el usuario está autenticado, mostrar el nombre de usuario
-$username = $_SESSION['username'];
+#$username = $_SESSION['username'];
 
 // Definir las variables para los mensajes de éxito y error
 $success_message = '';
@@ -193,119 +193,140 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="container form mt-5">
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-
-            <!-- Campos para la tabla Clave -->
+            <!-- Campos para la base de datos SeccionTecnica -->
             <div class="form-group">
-                <label for="id_tecnica_clave">ID Técnica: </label>
-                <input type="text" name="ID_Tecnica" id="ID_Tecnica"><br><br>
+             <h3>Sección Técnica</h3>
+                <label for="id_tecnica_clave">Numero de Inventario: </label>
+                <input type="text" class="form-control" name="NInventario" id="NInventario"><br><br>
+                <label for="id_tecnica_clave">Clave Tecnica: </label>
+                <input type="text" class="form-control" name="ClTecnica" id="ClTecnica"><br><br>
+                <label for="id_tecnica_clave">Proceso Fotografico: </label>
+                <input type="text" class="form-control" name="PFoto" id="PFoto"><br><br>
+                <label for="id_tecnica_clave">Fondo / Coleccion: </label>
+                <input type="text" class="form-control" name="Fondo" id="Fondo"><br><br>
+                <label for="id_tecnica_clave">Formato: </label>
+                <input type="text"class="form-control"  name="Formato" id="Formato"><br><br>
+                <label for="id_tecnica_clave">Numero Negativo Copia: </label>
+                <input type="text" class="form-control" name="NCopia" id="NCopia"><br><br>
+                <label for="id_tecnica_clave">Tipo: </label>
+                <input type="text" class="form-control" name="Tipo" id="Tipo"><br><br>
             </div>
 
             <!-- Campos para la tabla Datacion -->
             <div class="form-group">
+                <h3>Ubicación Geográfica</h3>
                 <label for="id_tecnica_datacion">ID Datación: </label>
-                <input type="text" name="ID_Datacion" id="ID_Datacion"><br><br>
+                <input type="text" class="form-control" name="ID_Datacion" id="ID_Datacion"><br><br>
                 <label for="fecha_asunto">Fecha Asunto: </label>
-                <input type="date" name="FechAsunto" id="FechAsunto"><br><br>
+                <input type="date" class="form-control" name="FechAsunto" id="FechAsunto"><br><br>
                 <label for="fecha_toma">Fecha Toma: </label>
-                <input type="date" name="FechToma" id="FechToma"><br><br>
+                <input type="date" class="form-control" name="FechToma" id="FechToma"><br><br>
             </div>
 
             <!-- Campos para la tabla Ubicacion geografica -->
             <div class="form-group">
+            <h3>Ubicación Geográfica</h3>
                 <label for="id_tecnica_ubicacion">ID Ubicación: </label>
-                <input type="text" name="ID_Ubicacion" id="ID_Ubicacion"><br><br>
+                <input type="text" class="form-control" name="ID_Ubicacion" id="ID_Ubicacion"><br><br>
                 <label for="lugar_asunto">Lugar de Asunto: </label>
-                <input type="text" name="LugarAsunto" id="LugarAsunto"><br><br>
+                <input type="text" class="form-control" name="LugarAsunto" id="LugarAsunto"><br><br>
                 <label for="lugar_toma">Lugar de Toma: </label>
-                <input type="text" name="LugarToma" id="LugarToma"><br><br>
+                <input type="text" class="form-control" name="LugarToma" id="LugarToma"><br><br>
             </div>
 
             <!-- Campos para la tabla Epocario -->
             <div class="form-group">
+                <h3>Epocario</h3>
                 <label for="id_tecnica_epocario">ID Epoca: </label>
-                <input type="text" name="ID_Epoca" id="ID_Epoca"><br><br>
+                <input type="text" class="form-control" name="ID_Epoca" id="ID_Epoca"><br><br>
                 <label for="epoca">Época: </label>
-                <input type="text" name="Epoca" id="Epoca"><br><br>
+                <input type="text" class="form-control" name="Epoca" id="Epoca"><br><br>
             </div>
 
             <!-- Campos para la tabla Autoria -->
             <div class="form-group">
+                <h3>Autoría</h3>
                 <label for="id_tecnica_autoria">ID Autoria: </label>
-                <input type="text" name="ID_Autoria" id="ID_Autoria"><br><br>
+                <input type="text" class="form-control" name="ID_Autoria" id="ID_Autoria"><br><br>
                 <label for="autor">Autor: </label>
-                <input type="text" name="Autor" id="Autor"><br><br>
+                <input type="text" class="form-control" name="Autor" id="Autor"><br><br>
                 <label for="autor_primigenio">Autor Primigenio: </label>
-                <input type="text" name="Autor_Primi" id="Autor_Primi"><br><br>
+                <input type="text" class="form-control" name="Autor_Primi" id="Autor_Primi"><br><br>
                 <label for="agencia_estudio">Agencia/Estudio: </label>
-                <input type="text" name="Agencia" id="Agencia"><br><br>
+                <input type="text" class="form-control" name="Agencia" id="Agencia"><br><br>
                 <label for="editor_coleccionista">Editor/Coleccionista: </label>
-                <input type="text" name="Editor" id="Editor"><br><br>
+                <input type="text" class="form-control" name="Editor" id="Editor"><br><br>
                 <label for="lema">Lema: </label>
-                <input type="text" name="Lema" id="Lema"><br><br>
+                <input type="text" class="form-control" name="Lema" id="Lema"><br><br>
             </div>
 
             <!-- Campos para la tabla indicativo -->
             <div class="form-group">
+                <h3>Indicativo</h3>
                 <label for="id_autoria_indicativo">ID Indicativo: </label>
-                <input type="text" name="ID_Indicativo" id="ID_Indicativo"><br><br>
+                <input type="text" class="form-control" name="ID_Indicativo" id="ID_Indicativo"><br><br>
                 <label for="sello">Sello: </label>
-                <input type="text" name="Sello" id="Sello"><br><br>
+                <input type="text" class="form-control" name="Sello" id="Sello"><br><br>
                 <label for="cuño">Cuño: </label>
-                <input type="text" name="Cuno" id="Cuno"><br><br>
+                <input type="text" class="form-control" name="Cuno" id="Cuno"><br><br>
                 <label for="firma">Firma: </label>
-                <input type="text" name="Firma" id="Firma"><br><br>
+                <input type="text" class="form-control" name="Firma" id="Firma"><br><br>
                 <label for="etiqueta">Etiqueta: </label>
-                <input type="text" name="Etiqueta" id="Etiqueta"><br><br>
+                <input type="text" class="form-control" name="Etiqueta" id="Etiqueta"><br><br>
                 <label for="imprenta">Imprenta: </label>
-                <input type="text" name="Imprenta" id="Imprenta"><br><br>
+                <input type="text" class="form-control" name="Imprenta" id="Imprenta"><br><br>
                 <label for="otro">Otro: </label>
-                <input type="text" name="Otro" id="Otro"><br><br>
+                <input type="text" class="form-control" name="Otro" id="Otro"><br><br>
             </div>
 
             <!-- Campos para la tabla Denominación -->
             <div class="form-group">
+                <h3>Denominación</h3>
                 <label for="id_tecnica_denominacion">ID Denominacion: </label>
-                <input type="text" name="ID_Denominacion" id="ID_Denominacion"><br><br>
+                <input type="text" class="form-control" name="ID_Denominacion" id="ID_Denominacion"><br><br>
                 <label for="titulo_origen">Título Origen: </label>
-                <input type="text" name="TitOrigen" id="TitOrigen"><br><br>
+                <input type="text" class="form-control" name="TitOrigen" id="TitOrigen"><br><br>
                 <label for="titulo_catalografico">Título Catalográfico: </label>
-                <input type="text" name="TitCatalo" id="TitCatalo"><br><br>
+                <input type="text" class="form-control" name="TitCatalo" id="TitCatalo"><br><br>
                 <label for="titulo_serie">Título Serie: </label>
-                <input type="text" name="TitSerie" id="TitSerie"><br><br>
+                <input type="text" class="form-control" name="TitSerie" id="TitSerie"><br><br>
             </div>
 
             <!-- Campos para la tabla Ubicacion Descriptores -->
             <div class="form-group">
+                <h3>Descriptores</h3>
                 <label for="id_tecnica_descriptores">ID Descriptores: </label>
-                <input type="text" name="ID_Descriptores" id="ID_Descriptores"><br><br>
+                <input type="text" class="form-control" name="ID_Descriptores" id="ID_Descriptores"><br><br>
                 <label for="tema_principal">Tema Principal: </label>
-                <input type="text" name="TemaPrin" id="TemaPrin"><br><br>
+                <input type="text" class="form-control" name="TemaPrin" id="TemaPrin"><br><br>
                 <label for="descriptores">Descriptores: </label>
-                <textarea name="Descriptores" id="Descriptores" cols="30" rows="5"></textarea><br><br>
+                <textarea name="Descriptores" class="form-control" id="Descriptores" cols="30" rows="5"></textarea><br><br>
             </div>
 
             <!-- Campos para la tabla Ubicacion Protagonistas -->
             <div class="form-group">
+                <h3>Protagonistas</h3>
                 <label for="id_tecnica_protagonistas">ID Protagonistas: </label>
-                <input type="text" name="ID_Protagonistas" id="ID_Protagonistas"><br><br>
+                <input type="text" class="form-control" name="ID_Protagonistas" id="ID_Protagonistas"><br><br>
                 <label for="personajes">Personajes: </label>
-                <textarea name="Personajes" id="Personajes" cols="30" rows="5"></textarea><br><br>
+                <textarea class="form-control" name="Personajes" id="Personajes" cols="30" rows="5"></textarea><br><br>
             </div>
 
             <!-- Campos para la tabla Ubicacion observaciones -->
             <div class="form-group">
+                <h3>Observaciones</h3>
                 <label for="id_tecnica_observaciones">ID Observaciones: </label>
-                <input type="text" name="ID_Observaciones" id="ID_Observaciones"><br><br>
+                <input type="text" class="form-control" name="ID_Observaciones" id="ID_Observaciones"><br><br>
                 <label for="inscripcion_original">Inscripción Original: </label>
-                <textarea name="InscripOriginal" id="InscripOriginal" cols="30" rows="5"></textarea><br><br>
+                <textarea class="form-control" name="InscripOriginal" id="InscripOriginal" cols="30" rows="5"></textarea><br><br>
                 <label for="conjunto">Conjunto: </label>
-                <input type="text" name="Conjunto" id="Conjunto"><br><br>
+                <input type="text" class="form-control" name="Conjunto" id="Conjunto"><br><br>
                 <label for="anotaciones">Anotaciones: </label>
-                <textarea name="Anotaciones" id="Anotaciones" cols="30" rows="5"></textarea><br><br>
+                <textarea class="form-control" name="Anotaciones" id="Anotaciones" cols="30" rows="5"></textarea><br><br>
                 <label for="numeros_interseccion">Números Intersección: </label>
-                <textarea name="NInterseccion" id="NInterseccion" cols="30" rows="5"></textarea><br><br>
+                <textarea class="form-control" name="NInterseccion" id="NInterseccion" cols="30" rows="5"></textarea><br><br>
                 <label for="documentacion_asociada">Documentación Asociada: </label>
-                <textarea name="DocAsociada" id="DocAsociada" cols="30" rows="5"></textarea><br><br>
+                <textarea class="form-control" name="DocAsociada" id="DocAsociada" cols="30" rows="5"></textarea><br><br>
             </div>
 
             <div class="container-btn"> <button type="submit" class="btnEnviar">Guardar</button> </div>
