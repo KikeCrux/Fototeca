@@ -11,16 +11,7 @@ if (!isset($_SESSION['username'])) {
 // Si el usuario está autenticado, mostrar el nombre de usuario
 $username = $_SESSION['username'];
 
-// Realizar la conexión a la base de datos
-$servername = "localhost";
-$db_username = "root";
-$db_password = "Sandia2016.!";
-$dbname = "fototeca_ob_uaa";
-
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
+require_once 'conexion_BD.php';
 
 // Verificar si se ha enviado un ID de Resguardante para eliminar
 if (isset($_GET['id']) && !empty($_GET['id'])) {
@@ -56,6 +47,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bajas Datos Generales</title>
     <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="../css/tablas.css">
 </head>
 
 <body>
@@ -94,7 +86,6 @@ $conn->close();
                     <th>Fecha: (Prestamo)</th>
                     <th>Caracteristicas</th>
                     <th>Observaciones</th>
-                    <th>Imagen de oficio/vale</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -112,7 +103,6 @@ $conn->close();
                         echo "<td>" . $row["FechaPrestamo"] . "</td>";
                         echo "<td>" . $row["Caracteristicas"] . "</td>";
                         echo "<td>" . $row["Observaciones"] . "</td>";
-                        echo "<td>" . $row["ImagenOficioVale"] . "</td>";
                         echo "<td><a href='baja-t3.php?id=" . $row["ID_DatosGenerales"] . "' class='btn btn-danger'>Eliminar</a></td>";
                         echo "</tr>";
                     }

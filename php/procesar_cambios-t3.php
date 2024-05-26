@@ -8,53 +8,35 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Realizar la conexión a la base de datos
-$servername = "localhost";
-$db_username = "root";
-$db_password = "Sandia2016.!";
-$dbname = "fototeca_ob_uaa";
+require_once 'conexion_BD.php';
 
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
-
-// Verificar si se recibió el ID del resguardante a cambiar
+// Verificar si se recibió el ID del registro a cambiar
 if (!isset($_GET['id'])) {
     // Si no se recibió el ID, redirigir a la página de cambios
     header("Location: cambio-t3.php");
     exit();
 }
 
-// Obtener el ID del resguardante
 $id_DatosGenerales = $_GET['id'];
 
-// Consultar los datos del resguardante a cambiar
-$sql = "SELECT * FROM DatosGenerales WHERE ID_DatosGenerales = $id_DatosGenerales";
-$result = $conn->query($sql);
+// Consultar los datos del registro a cambiar
+$sql = "SELECT * FROM DatosGenerales WHERE ID_DatosGenerales = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $id_DatosGenerales);
+$stmt->execute();
+$result = $stmt->get_result();
 
-// Verificar si se encontró el resguardante
+// Verificar si se encontró el registro
 if ($result->num_rows > 0) {
-    // Obtener los datos del resguardante
     $row = $result->fetch_assoc();
-    $autores = $row["Autores"];
-    $objeto = $row["ObjetoObra"];
-    $ubicacion = $row["Ubicacion"];
-    $inventario = $row["NoInventario"];
-    $vale = $row["NoVale"];
-    $fechprestamo = $row["FechaPrestamo"];
-    $caracteristicas = $row["Caracteristicas"];
-    $observaciones = $row["Observaciones"];
-    $imagen = $row["ImagenOficioVale"];
 } else {
-    // Si no se encontró el resguardante, redirigir a la página de cambios
+    // Si no se encontró el registro, redirigir a la página de cambios
     header("Location: cambio-t3.php");
     exit();
 }
 
 // Si se envió el formulario de cambios
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Obtener los nuevos datos del formulario
     $nuevos_autores = $_POST['autores'];
     $nuevo_objeto = $_POST['objeto'];
     $nueva_ubicacion = $_POST['ubicacion'];
@@ -63,23 +45,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nueva_fechprestamo = $_POST['fechprestamo'];
     $nuevas_caracteristicas = $_POST['caracteristicas'];
     $nuevas_observaciones = $_POST['observaciones'];
-    $nueva_imagen = $_POST['imagen'];
+    $nueva_imagen = isset($_FILES['imagen']) ? $_FILES['imagen'] : null;
 
     // Actualizar el registro en la base de datos
-    $sql = "UPDATE DatosGenerales SET Autores='$nuevos_autores', ObjetoObra='$nuevo_objeto', Ubicacion='$nueva_ubicacion', NoInventario='$nuevo_inventario', NoVale='$nuevo_vale',
-                                      FechaPrestamo='$nueva_fechprestamo', Caracteristicas='$nuevas_caracteristicas', Observaciones='$nuevas_observaciones', ImagenOficioVale='$nueva_imagen' WHERE ID_DatosGenerales=$id_DatosGenerales";
+    $sql = "UPDATE DatosGenerales SET Autores=?, ObjetoObra=?, Ubicacion=?, NoInventario=?, NoVale=?, FechaPrestamo=?, Caracteristicas=?, Observaciones=?, ImagenOficioVale=? WHERE ID_DatosGenerales=?";
+    $stmt = $conn->prepare($sql);
+    $null = NULL; // Para bind_param con tipo blob
 
-    if ($conn->query($sql) === TRUE) {
-        // Redirigir a la página de cambios con un mensaje de éxito
+    if ($nueva_imagen && $nueva_imagen['error'] === UPLOAD_ERR_OK) {
+        $tmp_name = $nueva_imagen['tmp_name'];
+        $pdfData = file_get_contents($tmp_name);
+        $stmt->bind_param("ssssssssbi", $nuevos_autores, $nuevo_objeto, $nueva_ubicacion, $nuevo_inventario, $nuevo_vale, $nueva_fechprestamo, $nuevas_caracteristicas, $nuevas_observaciones, $null, $id_DatosGenerales);
+        $stmt->send_long_data(8, $pdfData);
+    } else {
+        $stmt->bind_param("sssssssssi", $nuevos_autores, $nuevo_objeto, $nueva_ubicacion, $nuevo_inventario, $nuevo_vale, $nueva_fechprestamo, $nuevas_caracteristicas, $nuevas_observaciones, $row['ImagenOficioVale'], $id_DatosGenerales);
+    }
+
+    if ($stmt->execute()) {
         header("Location: cambio-t3.php?success_message=Cambios realizados exitosamente.");
         exit();
     } else {
-        // Mostrar un mensaje de error
-        $error_message = "Error al realizar cambios: " . $conn->error;
+        $error_message = "Error al realizar cambios: " . $stmt->error;
     }
 }
 
-// Cerrar la conexión a la base de datos
 $conn->close();
 ?>
 
@@ -106,44 +95,47 @@ $conn->close();
         <?php if (!empty($error_message)) : ?>
             <div class="alert alert-danger text-center"><?php echo $error_message; ?></div>
         <?php endif; ?>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id=' . $id_resguardante; ?>" method="post">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id=' . $id_DatosGenerales; ?>" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="nombre">Nuevos Autor(ES):</label>
-                <input type="text" class="form-control" id="autores" name="autores" value="<?php echo $autores; ?>">
+                <input type="text" class="form-control" id="autores" name="autores" value="<?php echo htmlspecialchars($row['Autores']); ?>" required>
             </div>
             <div class="form-group">
                 <label for="puesto">Nuevo objeto / obra:</label>
-                <input type="text" class="form-control" id="objeto" name="objeto" value="<?php echo $objeto; ?>">
+                <input type="text" class="form-control" id="objeto" name="objeto" value="<?php echo htmlspecialchars($row['ObjetoObra']); ?>">
             </div>
             <div class="form-group">
                 <label for="observaciones">Nueva ubicacion:</label>
-                <input type="text" class="form-control" id="ubicacion" name="ubicacion" value="<?php echo $ubicacion; ?>">
+                <input type="text" class="form-control" id="ubicacion" name="ubicacion" value="<?php echo htmlspecialchars($row['Ubicacion']); ?>" required>
             </div>
             <div class="form-group">
                 <label for="puesto">Nuevo inventario</label>
-                <input type="text" class="form-control" id="inventario" name="inventario" value="<?php echo $objeto; ?>">
+                <input type="text" class="form-control" id="inventario" name="inventario" value="<?php echo htmlspecialchars($row['NoInventario']); ?>" required>
             </div>
             <div class="form-group">
                 <label for="puesto">Nuevo No. Vale :</label>
-                <input type="text" class="form-control" id="vale" name="vale" value="<?php echo $vale; ?>">
+                <input type="text" class="form-control" id="vale" name="vale" value="<?php echo htmlspecialchars($row['NoVale']); ?>" required>
             </div>
             <div class="form-group">
                 <label for="puesto">Nueva Fecha (Prestamo):</label>
-                <input type="text" class="form-control" id="fechprestamo" name="fechprestamo" value="<?php echo $fechprestamo; ?>">
+                <input type="date" class="form-control" id="fechprestamo" name="fechprestamo" value="<?php echo htmlspecialchars($row['FechaPrestamo']); ?>" required>
             </div>
             <div class="form-group">
                 <label for="puesto">Nuevas caracteristicas:</label>
-                <textarea class="form-control" id="caracteristicas" name="caracteristicas" rows="3"><?php echo $caracteristicas; ?></textarea>
+                <textarea class="form-control" id="caracteristicas" name="caracteristicas" rows="3"><?php echo htmlspecialchars($row['Caracteristicas']); ?></textarea>
             </div>
             <div class="form-group">
                 <label for="puesto">Nuevas observaciones:</label>
-                <textarea class="form-control" id="observaciones" name="observaciones" rows="3"><?php echo $observaciones; ?></textarea>
+                <textarea class="form-control" id="observaciones" name="observaciones" rows="3"><?php echo htmlspecialchars($row['Observaciones']); ?></textarea>
             </div>
             <div class="form-group">
-                <label for="puesto">Nueva imagen:</label>
-                <input type="text" class="form-control" id="imagen" name="imagen" value="<?php echo $imagen; ?>">
+                <label for="imagen">Nueva imagen (PDF solo):</label>
+                <input type="file" class="form-control" id="imagen" name="imagen">
+                <?php if (!empty($row['ImagenOficioVale'])) : ?>
+                    <small>Un archivo ya está guardado. Subir uno nuevo reemplazará el existente.</small>
+                <?php endif; ?>
             </div>
-
+            <br>
             <button type="submit" class="btn btn-primary">Guardar cambios</button>
         </form>
     </div>

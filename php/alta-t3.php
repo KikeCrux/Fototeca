@@ -2,34 +2,19 @@
 session_start();
 
 // Verificar si el usuario está autenticado
-#if (!isset($_SESSION['username'])) {
-    // Si no está autenticado, redirigirlo a la página de inicio de sesión
-    #header("Location: login.php");
-    #exit();
-#}
+// if (!isset($_SESSION['username'])) {
+//     header("Location: login.php");
+//     exit();
+// }
 
-// Si el usuario está autenticado, mostrar el nombre de usuario
-#$username = $_SESSION['username'];
-
-// Definir las variables para los mensajes de éxito y error
 $success_message = '';
 $error_message = '';
 $imagenContenido = '';
 
-// Procesar el formulario si se envió
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Conectar a la base de datos
-    $servername = "localhost";
-    $username = "root";
-    $password = "Sandia2016.!";
-    $dbname = "fototeca_ob_uaa";
 
-    $conn = new mysqli($servername, $username, $password, $dbname);
-    if ($conn->connect_error) {
-        die("Error de conexión: " . $conn->connect_error);
-    }
+    require_once 'conexion_BD.php';
 
-    // Obtener los datos del formulario
     $autores = $_POST["autores"];
     $objeto = $_POST["objeto"];
     $ubicacion = $_POST["ubicacion"];
@@ -39,39 +24,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $caracteristicas = $_POST["caracteristicas"];
     $observaciones = $_POST["observaciones"];
 
-    // Procesar la carga de archivos
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
-        // Obtener el contenido binario de la imagen
-        $imagenContenido = file_get_contents($_FILES['imagen']['tmp_name']);
+        $fileTmpPath = $_FILES['imagen']['tmp_name'];
+        $fileType = $_FILES['imagen']['type'];
+        $fileSize = $_FILES['imagen']['size'];
 
-        // Preparar la consulta SQL con marcadores de posición
-        $sql = "INSERT INTO DatosGenerales (Autores, ObjetoObra, Ubicacion, NoInventario, NoVale,
-                                        FechaPrestamo, Caracteristicas, Observaciones, ImagenOficioVale) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        if ($fileType == 'application/pdf' && $fileSize < 5000000) { // 5 MB como límite
+            $imagenContenido = file_get_contents($fileTmpPath);
+            $sql = "INSERT INTO DatosGenerales (Autores, ObjetoObra, Ubicacion, NoInventario, NoVale,
+                    FechaPrestamo, Caracteristicas, Observaciones, ImagenOficioVale) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        // Preparar la declaración
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssssb", $autores, $objeto, $ubicacion, $inventario, $vale, $fechprestamo, $caracteristicas, $observaciones, $imagenContenido);
+            $stmt = $conn->prepare($sql);
+            if ($stmt === false) {
+                $error_message = "Error al preparar la consulta: " . $conn->error;
+            } else {
+                $null = null; // This is important for the blob type parameter
+                $stmt->bind_param("ssssssssb", $autores, $objeto, $ubicacion, $inventario, $vale, $fechprestamo, $caracteristicas, $observaciones, $null);
+                $stmt->send_long_data(8, $imagenContenido);
 
-        // Ejecutar la consulta preparada
-        if ($stmt->execute()) {
-            // Mensaje de éxito
-            $success_message = "Registro exitoso.";
+                if ($stmt->execute()) {
+                    $success_message = "Registro exitoso.";
+                } else {
+                    $error_message = "Error al registrar el dato en la base de datos: " . $stmt->error;
+                }
+                $stmt->close();
+            }
         } else {
-            // Error al ejecutar la consulta
-            $error_message = "Error al registrar el dato en la base de datos.";
+            $error_message = "Archivo no válido. Asegúrese de que es un PDF y no supera los 5 MB.";
         }
     } else {
-        // No se ha cargado ningún archivo o se ha producido un error
-        $error_message = "Por favor, seleccione una imagen válida.";
+        $error_message = "Por favor, seleccione un archivo PDF válido.";
     }
 
-
-    // Cerrar la conexión a la base de datos
     $conn->close();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -101,7 +89,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php endif; ?>
 
     <div class="container form mt-5">
-        <!-- Formulario de alta utilizando componentes de Bootstrap -->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="autores">Autor(ES)</label>
@@ -167,7 +154,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             window.history.back();
         }
 
-        // Función para ocultar la alerta después de un cierto período de tiempo
         setTimeout(function() {
             var successAlert = document.getElementById("successAlert");
             var errorAlert = document.getElementById("errorAlert");
@@ -176,7 +162,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else if (successAlert) {
                 successAlert.style.display = "none";
             }
-
         }, 5000); // 5000 milisegundos = 5 segundos
     </script>
 </body>

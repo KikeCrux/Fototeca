@@ -11,16 +11,7 @@ if (!isset($_SESSION['username'])) {
 // Si el usuario está autenticado, mostrar el nombre de usuario
 $username = $_SESSION['username'];
 
-// Realizar la conexión a la base de datos
-$servername = "localhost";
-$db_username = "root";
-$db_password = "Sandia2016.!";
-$dbname = "fototeca_ob_uaa";
-
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
+require_once 'conexion_BD.php';
 
 // Consultar los registros de la tabla Usuarios
 $sql = "SELECT ID_Usuario, Usuario, TipoUsuario FROM Usuarios";

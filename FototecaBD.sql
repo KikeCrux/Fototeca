@@ -42,7 +42,7 @@ CREATE TABLE Datacion (
     ID_Tecnica INT,
     FechaAsunto DATE,
     FechaToma DATE,
-    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica)O N DELETE CASCADE
+    FOREIGN KEY (ID_Tecnica) REFERENCES SeccionTecnica(ID_Tecnica)ON DELETE CASCADE
 );
 
 -- Tabla UbicacionGeografica

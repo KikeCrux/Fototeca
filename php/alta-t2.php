@@ -17,16 +17,8 @@ $error_message = '';
 
 // Procesar el formulario si se envió
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Conectar a la base de datos
-    $servername = "localhost";
-    $username = "root";
-    $password = "Sandia2016.!";
-    $dbname = "fototeca_ob_uaa";
 
-    $conn = new mysqli($servername, $username, $password, $dbname);
-    if ($conn->connect_error) {
-        die("Error de conexión: " . $conn->connect_error);
-    }
+    require_once 'conexion_BD.php';
 
     // Obtener los datos del formulario
     $nombre = $_POST["nombre"];

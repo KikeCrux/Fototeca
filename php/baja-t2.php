@@ -11,16 +11,7 @@ if (!isset($_SESSION['username'])) {
 // Si el usuario está autenticado, mostrar el nombre de usuario
 $username = $_SESSION['username'];
 
-// Realizar la conexión a la base de datos
-$servername = "localhost";
-$db_username = "root";
-$db_password = "Sandia2016.!";
-$dbname = "fototeca_ob_uaa";
-
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
+require_once 'conexion_BD.php';
 
 // Verificar si se ha enviado un ID de Resguardante para eliminar
 if (isset($_GET['id']) && !empty($_GET['id'])) {
@@ -55,7 +46,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bajas Asigando</title>
     <link rel="stylesheet" href="../css/login.css">
-    <link rel="stylesheet" href="../css/bajas.css">
+    <link rel="stylesheet" href="../css/tablas.css">
 </head>
 
 <body>

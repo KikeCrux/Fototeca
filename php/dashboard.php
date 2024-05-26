@@ -7,7 +7,6 @@ if (!isset($_SESSION['username'])) {
 }
 $username = $_SESSION['username'];
 
-// Imprimir el tipo de usuario en el registro de errores
 error_log('Tipo de usuario: ' . $_SESSION['tipoUsuario']);
 
 ?>
@@ -28,10 +27,6 @@ error_log('Tipo de usuario: ' . $_SESSION['tipoUsuario']);
     <br>
 
     <?php include 'menu-t1.php'; ?>
-
-    <!-- Otro contenido del dashboard -->
-
-
 
 </body>
 

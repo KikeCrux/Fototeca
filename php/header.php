@@ -17,9 +17,8 @@
             <?php
             // Verificar si el usuario ya está autenticado
             if (isset($_SESSION['username'])) {
-                // Si ya ha iniciado sesión, mostrar nombre de usuario y botón de logout
-                echo '<div class="navbar-text">'; // Utiliza la clase ml-auto para alinear a la derecha
-                echo '<p class="p-usr mr-3 mb-0">Bienvenido ' . $_SESSION['username'] . '</p>'; // Utiliza la clase mr-3 para agregar un margen a la derecha
+                echo '<div class="navbar-text">';
+                echo '<p class="p-usr mr-3 mb-0">Bienvenido ' . $_SESSION['username'] . '</p>';
                 echo '<form class="form-inline" action="logout.php" method="post">';
                 echo '<button class="btn btn-out" type="submit">Cerrar sesión</button>';
                 echo '</form>';

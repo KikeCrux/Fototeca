@@ -2,7 +2,6 @@
     <link rel="stylesheet" href="../css/menu-t1.css">
 </head>
 
-<!-- menu.php -->
 <div class="container">
 
     <h2 class="text-center">Inicios de sesion</h2>
@@ -30,11 +29,6 @@
             <ul class="navbar-nav text-center">
                 <li class="nav-item">
                     <a class="nav-link" href="baja-t4.php">Bajas</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav text-center">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Cambios</a>
                 </li>
             </ul>
             <ul class="navbar-nav text-center">

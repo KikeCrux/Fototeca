@@ -88,7 +88,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <br>
     <h2 class="text-center">Iniciar sesión</h2>
 
-    <!-- Mostrar mensaje de error -->
     <?php if (!empty($error_message)) : ?>
         <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
     <?php endif; ?>
@@ -106,13 +105,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     <script>
-        // Función para ocultar la alerta después de un cierto período de tiempo
         setTimeout(function() {
             var errorAlert = document.getElementById("errorAlert");
             if (errorAlert) {
                 errorAlert.style.display = "none";
             }
-        }, 5000); // 5000 milisegundos = 5 segundos
+        }, 5000);
     </script>
 
 </body>

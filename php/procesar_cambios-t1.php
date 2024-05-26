@@ -8,16 +8,7 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Realizar la conexión a la base de datos
-$servername = "localhost";
-$db_username = "root";
-$db_password = "Sandia2016.!";
-$dbname = "fototeca_ob_uaa";
-
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
+require_once 'conexion_BD.php';
 
 // Verificar si se recibió el ID del resguardante a cambiar
 if (!isset($_GET['id'])) {

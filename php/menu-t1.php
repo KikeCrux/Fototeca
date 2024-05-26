@@ -2,7 +2,6 @@
     <link rel="stylesheet" href="../css/menu-t1.css">
 </head>
 
-<!-- menu.php -->
 <div class="container">
     <h2 class="text-center">Resguardantes</h2>
     <br>

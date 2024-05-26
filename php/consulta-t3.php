@@ -11,16 +11,7 @@ if (!isset($_SESSION['username'])) {
 // Si el usuario está autenticado, mostrar el nombre de usuario
 $username = $_SESSION['username'];
 
-// Realizar la conexión a la base de datos
-$servername = "localhost";
-$db_username = "root";
-$db_password = "Sandia2016.!";
-$dbname = "fototeca_ob_uaa";
-
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
+require_once 'conexion_BD.php';
 
 // Consultar los registros de la tabla Resguardante
 $sql = "SELECT ID_DatosGenerales, Autores, ObjetoObra, Ubicacion, NoInventario, NoVale,
@@ -68,7 +59,7 @@ $conn->close();
                     <th>Caracteristicas</th>
                     <th>Observaciones</th>
                     <th>Imagen de oficio/vale</th>
-                    <th>Acciones</th>
+                    <!-- <th>Imagen de oficio/vale2</th> -->
                 </tr>
             </thead>
             <tbody>
@@ -85,13 +76,22 @@ $conn->close();
                         echo "<td>" . $row["FechaPrestamo"] . "</td>";
                         echo "<td>" . $row["Caracteristicas"] . "</td>";
                         echo "<td>" . $row["Observaciones"] . "</td>";
-                        echo "<td>" . $row["ImagenOficioVale"] . "</td>";
+                        echo "<td>";
+                        // Verificar si hay un PDF almacenado y mostrar un enlace para abrirlo
+                        if (!empty($row["ImagenOficioVale"])) {
+                            // Crear un enlace que apunte a un script de PHP que maneje la visualización del PDF
+                            echo '<a href="verPDF.php?id=' . $row["ID_DatosGenerales"] . '">Ver PDF</a>';
+                        }
+                        echo "</td>";
+                        // Imprimir tamaño del BLOB para depuración
+                        echo "<td>" . strlen($row["ImagenOficioVale"]) . " bytes</td>";
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='4'>No hay registros</td></tr>";
+                    echo "<tr><td colspan='10'>No hay registros</td></tr>";
                 }
                 ?>
+
             </tbody>
         </table>
     </div>
