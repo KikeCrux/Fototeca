@@ -1,44 +1,43 @@
 <?php
+// Inicia la sesión y verifica la autenticación del usuario
 session_start();
-
-// Verificar si el usuario está autenticado
 if (!isset($_SESSION['username'])) {
-    // Si no está autenticado, redirigirlo a la página de inicio de sesión
+    // Redirige a la página de inicio de sesión si el usuario no está autenticado
     header("Location: login.php");
     exit();
 }
 
-// Si el usuario está autenticado, mostrar el nombre de usuario
+// Usuario autenticado, almacenado en la variable para uso futuro
 $username = $_SESSION['username'];
 
-// Definir las variables para los mensajes de éxito y error
+// Variables para almacenar mensajes de éxito y error que se mostrarán al usuario
 $success_message = '';
 $error_message = '';
 
-// Procesar el formulario si se envió
+// Procesamiento del formulario cuando se envía mediante método POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
+    // Incluye el archivo que establece la conexión con la base de datos
     require_once 'conexion_BD.php';
 
-    // Obtener los datos del formulario
+    // Recuperación de datos del formulario enviado
     $nombre = $_POST["nombre"];
     $puesto = $_POST["puesto"];
     $observaciones = $_POST["observaciones"];
 
-    // Preparar la consulta SQL
+    // Construcción y ejecución de la consulta SQL para insertar un nuevo registro
     $sql = "INSERT INTO Asignado (Nombre, PuestoDepartamento, Observaciones) 
             VALUES ('$nombre', '$puesto', '$observaciones')";
 
-    // Ejecutar la consulta SQL
+    // Ejecución de la consulta y manejo de resultados
     if ($conn->query($sql) === TRUE) {
-        // Mensaje de éxito
+        // Si la inserción es exitosa, muestra un mensaje de éxito
         $success_message = "Asignado registrado exitosamente.";
     } else {
-        // Capturar el mensaje de error
+        // En caso de error en la consulta, captura y muestra el mensaje de error
         $error_message = "Error: " . $sql . "<br>" . $conn->error;
     }
 
-    // Cerrar la conexión a la base de datos
+    // Cierra la conexión a la base de datos para liberar recursos
     $conn->close();
 }
 ?>
@@ -55,24 +54,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
     <?php
-    $pageTitle = "Altas Asignado";
+    // Incluye el encabezado de la página
     include 'header.php';
     echo '<br>';
     echo '<h1 class="text-center">Registro de Asignado</h1>';
     ?>
 
-    <!-- Mostrar mensaje de éxito -->
+    <!-- Sección para mostrar mensajes de éxito o error tras el envío del formulario -->
     <?php if (!empty($success_message)) : ?>
         <div id="successAlert" class="alert alert-success text-center"><?php echo $success_message; ?></div>
     <?php endif; ?>
-
-    <!-- Mostrar mensaje de error -->
     <?php if (!empty($error_message)) : ?>
         <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
     <?php endif; ?>
 
+    <!-- Formulario para el registro de nuevos asignados -->
     <div class="container form mt-5">
-        <!-- Formulario de alta utilizando componentes de Bootstrap -->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
                 <label for="nombre">Nombre</label>
@@ -89,12 +86,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <textarea class="form-control" id="observaciones" name="observaciones" rows="3"></textarea>
             </div>
             <br>
-            <div class="container-btn"> <button type="submit" class="btnEnviar">Guardar</button> </div>
+            <div class="container-btn">
+                <button type="submit" class="btnEnviar">Guardar</button>
+            </div>
         </form>
     </div>
 
     <br>
 
+    <!-- Botón para regresar a la página anterior -->
     <div class="container-back">
         <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
     </div>
@@ -102,11 +102,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <br>
 
     <script>
+        // Funciones de JavaScript para mejorar la interacción del usuario
         function goBack() {
             window.history.back();
         }
-
-        // Función para ocultar la alerta después de un cierto período de tiempo
+        // Oculta los mensajes de alerta después de 5 segundos
         setTimeout(function() {
             var successAlert = document.getElementById("successAlert");
             var errorAlert = document.getElementById("errorAlert");
@@ -115,8 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else if (successAlert) {
                 successAlert.style.display = "none";
             }
-
-        }, 5000); // 5000 milisegundos = 5 segundos
+        }, 5000);
     </script>
 </body>
 

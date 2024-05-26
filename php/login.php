@@ -6,9 +6,8 @@ session_start();
 
 // Verificar si el usuario ya está autenticado
 if (isset($_SESSION['username'])) {
-    // Si ya ha iniciado sesión, redirigirlo a otra página
     header("Location: dashboard.php");
-    exit(); // Asegurarse de que el script se detenga después de la redirección
+    exit();
 }
 
 $error_message = ""; // Inicializar una variable para almacenar el mensaje de error
@@ -16,16 +15,7 @@ $error_message = ""; // Inicializar una variable para almacenar el mensaje de er
 // Verificar si se han enviado los datos del formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Realizar la conexión a la base de datos
-    $servername = "localhost";
-    $db_username = "root";
-    $db_password = "Sandia2016.!";
-    $dbname = "fototeca_ob_uaa";
-
-    $conn = new mysqli($servername, $db_username, $db_password, $dbname);
-
-    if ($conn->connect_error) {
-        die("Error de conexión: " . $conn->connect_error);
-    }
+    require_once 'conexion_BD.php';
 
     // Recuperar datos del formulario
     $username = $_POST['username'];
@@ -36,7 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-        // Inicio de sesión exitoso
         $_SESSION['username'] = $username;
 
         // Obtener el tipo de usuario del primer resultado
@@ -55,10 +44,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conn->query($insertLogSql);
 
         if ($_SESSION['tipoUsuario'] == "Admin") {
-            header("Location: dashboard-admin.php"); // Redireccionar al dashboard admin
-            exit();
+            header("Location: dashboard-admin.php");
         } elseif ($_SESSION['tipoUsuario'] == "Arte") {
-            header("Location: dashboard.php"); // Redireccionar al dashboard
+            header("Location: dashboard.php");
             exit();
         }
     } else {

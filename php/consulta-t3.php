@@ -50,16 +50,15 @@ $conn->close();
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Autor(ES)</th>
+                    <th>Autor(es)</th>
                     <th>Objeto / Obra</th>
                     <th>Ubicacion</th>
                     <th>Inventario</th>
                     <th>No. Vale</th>
-                    <th>Fecha: (Prestamo)</th>
+                    <th>Fecha Prestamo</th>
                     <th>Caracteristicas</th>
                     <th>Observaciones</th>
-                    <th>Imagen de oficio/vale</th>
-                    <!-- <th>Imagen de oficio/vale2</th> -->
+                    <th>Imagen de oficio / vale</th>
                 </tr>
             </thead>
             <tbody>
@@ -83,8 +82,6 @@ $conn->close();
                             echo '<a href="verPDF.php?id=' . $row["ID_DatosGenerales"] . '">Ver PDF</a>';
                         }
                         echo "</td>";
-                        // Imprimir tamaño del BLOB para depuración
-                        echo "<td>" . strlen($row["ImagenOficioVale"]) . " bytes</td>";
                         echo "</tr>";
                     }
                 } else {

@@ -1,44 +1,38 @@
 <?php
+// Iniciar sesión y manejar el control de acceso
 session_start();
-
-// Verificar si el usuario está autenticado
 if (!isset($_SESSION['username'])) {
-    // Si no está autenticado, redirigirlo a la página de inicio de sesión
     header("Location: login.php");
     exit();
 }
 
-// Si el usuario está autenticado, mostrar el nombre de usuario
-$username = $_SESSION['username'];
+$username = $_SESSION['username']; // Usuario actual autenticado
 
-// Definir las variables para los mensajes de éxito y error
+// Inicialización de mensajes para la interfaz de usuario
 $success_message = '';
 $error_message = '';
 
-// Procesar el formulario si se envió
+// Proceso del formulario al recibir datos por POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    // Incluir archivo de conexión centralizado a la BD
     require_once 'conexion_BD.php';
 
-    // Obtener los datos del formulario
+    // Recuperar datos del formulario
     $nombre = $_POST["nombre"];
     $puesto = $_POST["puesto"];
     $observaciones = $_POST["observaciones"];
 
-    // Preparar la consulta SQL
+    // Construcción y ejecución de la consulta SQL para inserción de datos
     $sql = "INSERT INTO Resguardante (Nombre, PuestoDepartamento, Observaciones) 
             VALUES ('$nombre', '$puesto', '$observaciones')";
-
-    // Ejecutar la consulta SQL
     if ($conn->query($sql) === TRUE) {
-        // Mensaje de éxito
         $success_message = "Resguardante registrado exitosamente.";
     } else {
-        // Capturar el mensaje de error
         $error_message = "Error: " . $sql . "<br>" . $conn->error;
     }
 
-    // Cerrar la conexión a la base de datos
-    $conn->close();
+    $conn->close(); // Cerrar conexión a la base de datos
 }
 ?>
 
@@ -54,24 +48,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
     <?php
-    $pageTitle = "Altas Resguardante";
-    include 'header.php';
+    include 'header.php'; // Incluir cabecera
     echo '<br>';
     echo '<h1 class="text-center">Registro de Resguardantes</h1>';
     ?>
 
-    <!-- Mostrar mensaje de éxito -->
+    <!-- Mensajes de alerta para el usuario -->
     <?php if (!empty($success_message)) : ?>
         <div id="successAlert" class="alert alert-success text-center"><?php echo $success_message; ?></div>
     <?php endif; ?>
-
-    <!-- Mostrar mensaje de error -->
     <?php if (!empty($error_message)) : ?>
         <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
     <?php endif; ?>
 
+    <!-- Formulario de registro de resguardante -->
     <div class="container form mt-5">
-        <!-- Formulario de alta utilizando componentes de Bootstrap -->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
                 <label for="nombre">Nombre</label>
@@ -88,12 +79,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <textarea class="form-control" id="observaciones" name="observaciones" rows="3"></textarea>
             </div>
             <br>
-            <div class="container-btn"> <button type="submit" class="btnEnviar">Guardar</button> </div>
+            <div class="container-btn">
+                <button type="submit" class="btnEnviar">Guardar</button>
+            </div>
         </form>
     </div>
 
     <br>
 
+    <!-- Botón para regresar a la página anterior -->
     <div class="container-back">
         <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
     </div>
@@ -101,11 +95,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <br>
 
     <script>
+        // Funcionalidad para regresar a la página anterior y manejo de alertas
         function goBack() {
             window.history.back();
         }
-
-        // Función para ocultar la alerta después de un cierto período de tiempo
         setTimeout(function() {
             var successAlert = document.getElementById("successAlert");
             var errorAlert = document.getElementById("errorAlert");
@@ -114,8 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else if (successAlert) {
                 successAlert.style.display = "none";
             }
-
-        }, 5000); // 5000 milisegundos = 5 segundos
+        }, 5000);
     </script>
 </body>
 

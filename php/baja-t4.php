@@ -1,40 +1,46 @@
 <?php
 session_start();
 
-// Verificar si el usuario está autenticado
+// Verificar autenticación del usuario y redirigir si no está autenticado.
 if (!isset($_SESSION['username'])) {
-    // Si no está autenticado, redirigirlo a la página de inicio de sesión
     header("Location: login.php");
     exit();
 }
 
-// Si el usuario está autenticado, mostrar el nombre de usuario
-$username = $_SESSION['username'];
-
+// Cargar conexión a la base de datos.
 require_once 'conexion_BD.php';
 
-// Verificar si se ha enviado un ID de Usuario para eliminar
+// Eliminación de usuario si se proporciona un ID válido.
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    // ID de Usuario a eliminar
     $id_usuario = $_GET['id'];
 
-    // Consulta SQL para eliminar el Usuario
-    $sql = "DELETE FROM Usuarios WHERE ID_Usuario = $id_usuario";
+    // Intenta eliminar primero registros dependientes en 'userlogs' para evitar errores de clave foránea
+    $conn->autocommit(FALSE); // Desactiva el autocommit para manejar la transacción manualmente
+    try {
+        $sql = "DELETE FROM userlogs WHERE ID_Usuario = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
 
-    if ($conn->query($sql) === TRUE) {
-        // Mensaje de éxito
+        $sql = "DELETE FROM Usuarios WHERE ID_Usuario = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+
+        $conn->commit(); // Confirma todas las operaciones de la transacción
         $success_message = "El usuario se eliminó correctamente.";
-    } else {
-        // Mensaje de error
-        $error_message = "Error al eliminar el usuario: " . $conn->error;
+    } catch (mysqli_sql_exception $e) {
+        $conn->rollback(); // Revierte la transacción en caso de error
+        $error_message = "Error al eliminar el usuario: " . $e->getMessage();
     }
+    $conn->autocommit(TRUE); // Reactiva el autocommit
 }
 
-// Consultar los registros de la tabla Usuarios
+// Consulta para obtener la lista de usuarios.
 $sql = "SELECT ID_Usuario, Usuario, TipoUsuario FROM Usuarios";
 $result = $conn->query($sql);
 
-// Cerrar la conexión a la base de datos
+// Cierra la conexión después de las operaciones.
 $conn->close();
 ?>
 
@@ -51,27 +57,24 @@ $conn->close();
 
 <body>
     <?php
+    // Incluir encabezado con el título de la página.
     $pageTitle = "Bajas Usuarios";
-    include 'header.php'; // Incluir el archivo header.php si contiene el encabezado de la página
-    echo '<br>';
+    include 'header.php';
     echo '<h1 class="text-center">Bajas de Usuarios</h1>';
     ?>
 
-
-    <!-- Mostrar mensaje de éxito -->
+    <!-- Sección para mostrar mensajes de éxito o error. -->
     <?php if (!empty($success_message)) : ?>
         <div id="successAlert" class="alert alert-success text-center"><?php echo $success_message; ?></div>
     <?php endif; ?>
-
-    <!-- Mostrar mensaje de error -->
     <?php if (!empty($error_message)) : ?>
         <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
     <?php endif; ?>
 
+    <!-- Botón para regresar a la página anterior y tabla para gestionar usuarios. -->
     <div class="container-back">
         <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
     </div>
-
     <div class="container mt-5">
         <table class="table table-striped">
             <thead>
@@ -83,6 +86,7 @@ $conn->close();
                 </tr>
             </thead>
             <tbody>
+                <!-- Muestra los usuarios existentes con opciones para eliminar. -->
                 <?php
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
@@ -102,11 +106,10 @@ $conn->close();
     </div>
 
     <script>
+        // Función para manejar el regreso a la página anterior y gestionar la visibilidad de alertas.
         function goBack() {
             window.history.back();
         }
-
-        // Función para ocultar la alerta después de un cierto período de tiempo
         setTimeout(function() {
             var successAlert = document.getElementById("successAlert");
             var errorAlert = document.getElementById("errorAlert");
@@ -115,10 +118,8 @@ $conn->close();
             } else {
                 successAlert.style.display = "none";
             }
-
-        }, 5000); // 5000 milisegundos = 5 segundos
+        }, 5000);
     </script>
-
 </body>
 
 </html>

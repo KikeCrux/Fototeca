@@ -1,40 +1,30 @@
 <?php
+// Iniciar sesión y verificar si el usuario está autenticado.
 session_start();
-
-// Verificar si el usuario está autenticado
 if (!isset($_SESSION['username'])) {
-    // Si no está autenticado, redirigirlo a la página de inicio de sesión
     header("Location: login.php");
     exit();
 }
 
-// Si el usuario está autenticado, mostrar el nombre de usuario
-$username = $_SESSION['username'];
-
+// Carga la configuración de conexión a la base de datos.
 require_once 'conexion_BD.php';
 
-// Verificar si se ha enviado un ID de Resguardante para eliminar
+// Procesar eliminación si se recibe un ID válido por método GET.
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    // ID de Resguardante a eliminar
     $id_asignado = $_GET['id'];
-
-    // Consulta SQL para eliminar el Resguardante
     $sql = "DELETE FROM Asignado WHERE ID_Asignado = $id_asignado";
-
     if ($conn->query($sql) === TRUE) {
-        // Mensaje de éxito
         $success_message = "El registro se eliminó correctamente.";
     } else {
-        // Mensaje de error
         $error_message = "Error al eliminar el registro: " . $conn->error;
     }
 }
 
-// Consultar los registros de la tabla Resguardante
+// Consulta para obtener todos los registros de asignados y preparar la visualización en la tabla.
 $sql = "SELECT ID_Asignado, Nombre, PuestoDepartamento, Observaciones FROM Asignado";
 $result = $conn->query($sql);
 
-// Cerrar la conexión a la base de datos
+// Cierra la conexión a la base de datos después de realizar las operaciones.
 $conn->close();
 ?>
 
@@ -42,36 +32,35 @@ $conn->close();
 <html lang="es">
 
 <head>
+    <!-- Configuraciones básicas de la página HTML -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bajas Asigando</title>
+    <title>Bajas Asignado</title>
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" href="../css/tablas.css">
 </head>
 
 <body>
     <?php
+    // Configura y muestra el encabezado de la página, incluyendo el título.
     $pageTitle = "Bajas Asignado";
     include 'header.php';
     echo '<br>';
-    echo '<h1 class="text-center">Bajas de Asigando</h1>';
+    echo '<h1 class="text-center">Bajas de Asignado</h1>';
     ?>
 
-
-    <!-- Mostrar mensaje de éxito -->
+    <!-- Muestra mensajes de éxito o error tras realizar operaciones de eliminación. -->
     <?php if (!empty($success_message)) : ?>
         <div id="successAlert" class="alert alert-success text-center"><?php echo $success_message; ?></div>
     <?php endif; ?>
-
-    <!-- Mostrar mensaje de error -->
     <?php if (!empty($error_message)) : ?>
         <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
     <?php endif; ?>
 
+    <!-- Botón de regreso y tabla para visualizar y gestionar asignados. -->
     <div class="container-back">
         <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
     </div>
-
     <div class="container mt-5">
         <table class="table table-striped">
             <thead>
@@ -84,6 +73,7 @@ $conn->close();
                 </tr>
             </thead>
             <tbody>
+                <!-- Loop para mostrar registros existentes y opciones para manejarlos. -->
                 <?php
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
@@ -104,23 +94,22 @@ $conn->close();
     </div>
 
     <script>
+        // Función para regresar a la página anterior.
         function goBack() {
             window.history.back();
         }
 
-        // Función para ocultar la alerta después de un cierto período de tiempo
+        // Temporizador para ocultar alertas automáticamente.
         setTimeout(function() {
             var successAlert = document.getElementById("successAlert");
             var errorAlert = document.getElementById("errorAlert");
             if (errorAlert) {
                 errorAlert.style.display = "none";
-            } else {
+            } else if (successAlert) {
                 successAlert.style.display = "none";
             }
-
-        }, 5000); // 5000 milisegundos = 5 segundos
+        }, 5000);
     </script>
-
 </body>
 
 </html>

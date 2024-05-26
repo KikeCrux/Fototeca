@@ -1,23 +1,20 @@
 <?php
+// Inicia la sesión y verifica si el usuario está autenticado, redirigiendo al login si no lo está.
 session_start();
-
-// Verificar si el usuario está autenticado
 if (!isset($_SESSION['username'])) {
-    // Si no está autenticado, redirigirlo a la página de inicio de sesión
     header("Location: login.php");
     exit();
 }
 
-// Si el usuario está autenticado, mostrar el nombre de usuario
+// Obtiene el nombre del usuario autenticado y lo almacena en una variable.
 $username = $_SESSION['username'];
 
+// Incluye el script de conexión a la base de datos y realiza una consulta para obtener los asignados.
 require_once 'conexion_BD.php';
-
-// Consultar los registros de la tabla Resguardante
 $sql = "SELECT ID_Asignado, Nombre, PuestoDepartamento, Observaciones FROM Asignado";
 $result = $conn->query($sql);
 
-// Cerrar la conexión a la base de datos
+// Cierra la conexión a la base de datos una vez que se han recuperado los datos necesarios.
 $conn->close();
 ?>
 
@@ -34,17 +31,18 @@ $conn->close();
 
 <body>
     <?php
+    // Incluye el archivo de cabecera y muestra el título de la página dinámicamente.
     $pageTitle = "Cambios Asignado";
     include 'header.php';
-    echo '<br>';
     echo '<h1 class="text-center">Cambios de Asignado</h1>';
     ?>
 
+    <!-- Botón para regresar a la página anterior. -->
     <div class="container-back">
         <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
     </div>
 
-
+    <!-- Tabla para mostrar los datos de los asignados y proporcionar una acción de cambio. -->
     <div class="container mt-5">
         <table class="table table-striped">
             <thead>
@@ -58,6 +56,7 @@ $conn->close();
             </thead>
             <tbody>
                 <?php
+                // Itera sobre cada registro de asignados y muestra sus detalles con una opción para editar.
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>";
@@ -77,6 +76,7 @@ $conn->close();
     </div>
 
     <script>
+        // Función JavaScript para permitir al usuario regresar a la página anterior.
         function goBack() {
             window.history.back();
         }

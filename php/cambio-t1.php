@@ -1,23 +1,20 @@
 <?php
+// Inicia la sesión y verifica la autenticación del usuario. Redirige a la página de inicio de sesión si no está autenticado.
 session_start();
-
-// Verificar si el usuario está autenticado
 if (!isset($_SESSION['username'])) {
-    // Si no está autenticado, redirigirlo a la página de inicio de sesión
     header("Location: login.php");
     exit();
 }
 
-// Si el usuario está autenticado, mostrar el nombre de usuario
+// Almacena el nombre de usuario en una variable para uso posterior.
 $username = $_SESSION['username'];
 
+// Incluye el archivo de conexión a la base de datos y realiza una consulta para obtener los resguardantes.
 require_once 'conexion_BD.php';
-
-// Consultar los registros de la tabla Resguardante
 $sql = "SELECT ID_Resguardante, Nombre, PuestoDepartamento, Observaciones FROM Resguardante";
 $result = $conn->query($sql);
 
-// Cerrar la conexión a la base de datos
+// Cierra la conexión a la base de datos después de obtener los datos necesarios.
 $conn->close();
 ?>
 
@@ -34,16 +31,15 @@ $conn->close();
 
 <body>
     <?php
+    // Incluye el encabezado de la página, usando el título dinámico para la página.
     $pageTitle = "Cambios Resguardante";
     include 'header.php';
-    echo '<br>';
     echo '<h1 class="text-center">Cambios de Resguardantes</h1>';
     ?>
 
     <div class="container-back">
         <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
     </div>
-
 
     <div class="container mt-5">
         <table class="table table-striped">
@@ -58,6 +54,7 @@ $conn->close();
             </thead>
             <tbody>
                 <?php
+                // Muestra los registros de resguardantes en la tabla y proporciona un enlace para realizar cambios.
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>";
@@ -77,6 +74,7 @@ $conn->close();
     </div>
 
     <script>
+        // Función para permitir al usuario regresar a la página anterior.
         function goBack() {
             window.history.back();
         }

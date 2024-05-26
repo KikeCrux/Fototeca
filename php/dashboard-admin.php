@@ -1,13 +1,13 @@
 <?php
+// Inicia sesión y verifica si el usuario está autenticado
 session_start();
-
 if (!isset($_SESSION['username'])) {
+    // Si no hay una sesión activa, redirige al usuario al formulario de inicio de sesión
     header("Location: login.php");
     exit();
 }
+// Almacena el nombre de usuario autenticado para su uso en el script
 $username = $_SESSION['username'];
-
-error_log('Tipo de usuario: ' . $_SESSION['tipoUsuario']);
 
 ?>
 
@@ -20,12 +20,16 @@ error_log('Tipo de usuario: ' . $_SESSION['tipoUsuario']);
 
 <body>
     <?php
-    $pageTitle = "Dashborard-Admin";
+    // Incluye el archivo de cabecera que puede contener la navegación o elementos visuales comunes
+    $pageTitle = "Dashboard-Admin";
     include 'header.php';
     ?>
 
     <br>
-    <?php include 'menu-admin.php'; ?>
+    <?php
+    // Incluye el menú específico para administradores, controlando el acceso a funcionalidades específicas
+    include 'menu-admin.php';
+    ?>
 
 </body>
 

@@ -1,24 +1,23 @@
 <?php
+// Iniciar sesión y verificar autenticación. Redirige si el usuario no está autenticado.
 session_start();
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
 
-// Verificar si el usuario está autenticado
-#if (!isset($_SESSION['username'])) {
-// Si no está autenticado, redirigirlo a la página de inicio de sesión
-#header("Location: login.php");
-#exit();
-#}
+// Accede al nombre de usuario autenticado y lo almacena en una variable.
+$username = $_SESSION['username'];
 
-// Si el usuario está autenticado, mostrar el nombre de usuario
-#$username = $_SESSION['username'];
-
+// Incluye el script de conexión a la base de datos.
 require_once 'conexion_BD.php';
 
-// Consultar los registros de la tabla Datos Generales
+// Realiza una consulta para obtener los registros de Datos Generales.
 $sql = "SELECT ID_DatosGenerales, Autores, ObjetoObra, Ubicacion, NoInventario, NoVale,
                 FechaPrestamo, Caracteristicas, Observaciones, ImagenOficioVale FROM DatosGenerales";
 $result = $conn->query($sql);
 
-// Cerrar la conexión a la base de datos
+// Cierra la conexión a la base de datos después de las operaciones.
 $conn->close();
 ?>
 
@@ -26,6 +25,7 @@ $conn->close();
 <html lang="es">
 
 <head>
+    <!-- Define los metadatos de la página y enlaza las hojas de estilo para el diseño. -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cambios Datos Generales</title>
@@ -35,17 +35,18 @@ $conn->close();
 
 <body>
     <?php
+    // Incluye el archivo de cabecera y muestra el título de la página dinámicamente.
     $pageTitle = "Cambios Datos Generales";
     include 'header.php';
-    echo '<br>';
     echo '<h1 class="text-center">Cambios de Datos Generales</h1>';
     ?>
 
+    <!-- Botón para regresar a la página anterior. -->
     <div class="container-back">
         <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
     </div>
 
-
+    <!-- Tabla para mostrar los datos de Datos Generales y proporcionar una acción de cambio. -->
     <div class="container mt-5">
         <table class="table table-striped">
             <thead>
@@ -63,6 +64,7 @@ $conn->close();
                 </tr>
             </thead>
             <tbody>
+                <!-- Itera sobre cada registro de Datos Generales y muestra sus detalles con una opción para editar. -->
                 <?php
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
@@ -80,7 +82,7 @@ $conn->close();
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='5'>No hay registros</td></tr>";
+                    echo "<tr><td colspan='10'>No hay registros</td></tr>";
                 }
                 ?>
             </tbody>
@@ -88,6 +90,7 @@ $conn->close();
     </div>
 
     <script>
+        // Función JavaScript para permitir al usuario regresar a la página anterior.
         function goBack() {
             window.history.back();
         }

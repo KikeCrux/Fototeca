@@ -10,12 +10,14 @@
 </head>
 
 <body>
-    <!-- Barra de navegación -->
+    <!-- Barra de navegación superior -->
     <nav class="navbar nav_teca navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
+            <!-- Enlace de la marca que podría dirigir a la página principal o dashboard -->
             <a class="navbar-brand" href="#">Fototeca Obras UAA</a>
             <?php
-            // Verificar si el usuario ya está autenticado
+
+            // Bloque condicional para mostrar información del usuario si está autenticado
             if (isset($_SESSION['username'])) {
                 echo '<div class="navbar-text">';
                 echo '<p class="p-usr mr-3 mb-0">Bienvenido ' . $_SESSION['username'] . '</p>';
@@ -28,6 +30,7 @@
         </div>
     </nav>
 
+    <!-- Script de JavaScript para funcionalidades de Bootstrap -->
     <script src="../resources/bootstrap/dist/js/bootstrap.min.js"></script>
 
 </body>

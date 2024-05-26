@@ -1,44 +1,45 @@
 <?php
+// Inicia sesión y verifica si el usuario está autenticado
 session_start();
-
-// Verificar si el usuario está autenticado
 if (!isset($_SESSION['username'])) {
-    // Si no está autenticado, redirigirlo a la página de inicio de sesión
+    // Redirige a la página de inicio de sesión si no hay usuario autenticado
     header("Location: login.php");
     exit();
 }
 
-// Si el usuario está autenticado, mostrar el nombre de usuario
-$username = $_SESSION['username'];
+// Variables para almacenar mensajes para el usuario
+$username = $_SESSION['username']; // Usuario autenticado
 
-// Definir las variables para los mensajes de éxito y error
-$success_message = '';
-$error_message = '';
+$success_message = ''; // Mensaje de éxito de operación
+$error_message = ''; // Mensaje de error de operación
 
-// Procesar el formulario si se envió
+// Procesa la información del formulario cuando se envía
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
+    // Incluye el script de conexión a la base de datos
     require_once 'conexion_BD.php';
 
-    // Obtener los datos del formulario
+    // Recupera datos del formulario
     $usuario = $_POST["usuario"];
     $contraseña = $_POST["contraseña"];
     $tipoUsuario = $_POST["tipoUsuario"];
 
-    // Preparar la consulta SQL
+    // Prepara y ejecuta la consulta SQL para registrar un nuevo usuario
     $sql = "INSERT INTO Usuarios (Usuario, Contraseña, TipoUsuario) 
-            VALUES ('$usuario', '$contraseña', '$tipoUsuario')";
-
-    // Ejecutar la consulta SQL
-    if ($conn->query($sql) === TRUE) {
-        // Mensaje de éxito
-        $success_message = "Usuario registrado exitosamente.";
+            VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param("sss", $usuario, $contraseña, $tipoUsuario);
+        if ($stmt->execute()) {
+            $success_message = "Usuario registrado exitosamente.";
+        } else {
+            $error_message = "Error al registrar el usuario: " . $stmt->error;
+        }
+        $stmt->close();
     } else {
-        // Capturar el mensaje de error
-        $error_message = "Error: " . $sql . "<br>" . $conn->error;
+        $error_message = "Error al preparar la consulta: " . $conn->error;
     }
 
-    // Cerrar la conexión a la base de datos
+    // Cierra la conexión a la base de datos
     $conn->close();
 }
 ?>
@@ -55,35 +56,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
     <?php
-    $pageTitle = "Altas Usuarios";
+    // Incluye la cabecera de la página web
     include 'header.php';
     echo '<br>';
     echo '<h1 class="text-center">Registro de Usuarios</h1>';
     ?>
 
-    <!-- Mostrar mensaje de éxito -->
+    <!-- Sección para mostrar mensajes de éxito o error -->
     <?php if (!empty($success_message)) : ?>
         <div id="successAlert" class="alert alert-success text-center"><?php echo $success_message; ?></div>
     <?php endif; ?>
-
-    <!-- Mostrar mensaje de error -->
     <?php if (!empty($error_message)) : ?>
         <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
     <?php endif; ?>
 
+    <!-- Formulario para la creación de un nuevo usuario -->
     <div class="container form mt-5">
-        <!-- Formulario de alta utilizando componentes de Bootstrap -->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
                 <label for="usuario">Usuario</label>
                 <input type="text" class="form-control" id="usuario" name="usuario" required>
             </div>
-            <br>
             <div class="form-group">
                 <label for="contraseña">Contraseña</label>
                 <input type="password" class="form-control" id="contraseña" name="contraseña" required>
             </div>
-            <br>
             <div class="form-group">
                 <label for="tipoUsuario">Tipo de Usuario</label>
                 <select class="form-control" id="tipoUsuario" name="tipoUsuario">
@@ -92,24 +89,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </select>
             </div>
             <br>
-            <div class="container-btn"> <button type="submit" class="btnEnviar">Guardar</button> </div>
+            <div class="container-btn">
+                <button type="submit" class="btnEnviar">Guardar</button>
+            </div>
         </form>
     </div>
 
-    <br>
-
+    <!-- Botón para regresar a la página anterior -->
     <div class="container-back">
         <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
     </div>
 
-    <br>
-
     <script>
+        // Función para regresar a la página anterior
         function goBack() {
             window.history.back();
         }
 
-        // Función para ocultar la alerta después de un cierto período de tiempo
+        // Función para ocultar las alertas después de un cierto tiempo
         setTimeout(function() {
             var successAlert = document.getElementById("successAlert");
             var errorAlert = document.getElementById("errorAlert");
@@ -118,8 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else if (successAlert) {
                 successAlert.style.display = "none";
             }
-
-        }, 5000); // 5000 milisegundos = 5 segundos
+        }, 5000);
     </script>
 </body>
 

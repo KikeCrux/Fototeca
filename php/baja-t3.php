@@ -1,41 +1,31 @@
 <?php
+// Inicia la sesión y verifica si el usuario está autenticado, redirigiendo al login si no lo está.
 session_start();
-
-// Verificar si el usuario está autenticado
 if (!isset($_SESSION['username'])) {
-    // Si no está autenticado, redirigirlo a la página de inicio de sesión
     header("Location: login.php");
     exit();
 }
 
-// Si el usuario está autenticado, mostrar el nombre de usuario
-$username = $_SESSION['username'];
-
+// Incluye el script de conexión a la base de datos.
 require_once 'conexion_BD.php';
 
-// Verificar si se ha enviado un ID de Resguardante para eliminar
+// Procesa la solicitud de eliminación si se ha proporcionado un ID válido.
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    // ID de Resguardante a eliminar
     $id_DatosGenerales = $_GET['id'];
-
-    // Consulta SQL para eliminar el Resguardante
     $sql = "DELETE FROM DatosGenerales WHERE ID_DatosGenerales = $id_DatosGenerales";
-
     if ($conn->query($sql) === TRUE) {
-        // Mensaje de éxito
         $success_message = "El registro se eliminó correctamente.";
     } else {
-        // Mensaje de error
         $error_message = "Error al eliminar el registro: " . $conn->error;
     }
 }
 
-// Consultar los registros de la tabla Resguardante
+// Realiza una consulta para obtener todos los registros de la tabla DatosGenerales.
 $sql = "SELECT ID_DatosGenerales, Autores, ObjetoObra, Ubicacion, NoInventario, NoVale,
                 FechaPrestamo, Caracteristicas, Observaciones, ImagenOficioVale FROM DatosGenerales";
 $result = $conn->query($sql);
 
-// Cerrar la conexión a la base de datos
+// Cierra la conexión a la base de datos.
 $conn->close();
 ?>
 
@@ -52,27 +42,25 @@ $conn->close();
 
 <body>
     <?php
+    // Incluye el encabezado de la página web, mostrando el título de la página.
     $pageTitle = "Bajas Datos Generales";
     include 'header.php';
     echo '<br>';
     echo '<h1 class="text-center">Bajas de Datos Generales</h1>';
     ?>
 
-
-    <!-- Mostrar mensaje de éxito -->
+    <!-- Sección para mostrar mensajes de éxito o error tras las operaciones de eliminación. -->
     <?php if (!empty($success_message)) : ?>
         <div id="successAlert" class="alert alert-success text-center"><?php echo $success_message; ?></div>
     <?php endif; ?>
-
-    <!-- Mostrar mensaje de error -->
     <?php if (!empty($error_message)) : ?>
         <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
     <?php endif; ?>
 
+    <!-- Botón para regresar a la página anterior y tabla para visualizar los registros de Datos Generales. -->
     <div class="container-back">
         <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
     </div>
-
     <div class="container mt-5">
         <table class="table table-striped">
             <thead>
@@ -90,6 +78,7 @@ $conn->close();
                 </tr>
             </thead>
             <tbody>
+                <!-- Muestra los registros existentes permitiendo su gestión mediante enlaces de acción. -->
                 <?php
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
@@ -107,7 +96,7 @@ $conn->close();
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='5'>No hay registros</td></tr>";
+                    echo "<tr><td colspan='10'>No hay registros</td></tr>";
                 }
                 ?>
             </tbody>
@@ -115,11 +104,11 @@ $conn->close();
     </div>
 
     <script>
+        // Función JavaScript para regresar a la página anterior.
         function goBack() {
             window.history.back();
         }
-
-        // Función para ocultar la alerta después de un cierto período de tiempo
+        // Temporizador para ocultar automáticamente las alertas de éxito o error.
         setTimeout(function() {
             var successAlert = document.getElementById("successAlert");
             var errorAlert = document.getElementById("errorAlert");
@@ -128,7 +117,6 @@ $conn->close();
             } else {
                 successAlert.style.display = "none";
             }
-
         }, 5000); // 5000 milisegundos = 5 segundos
     </script>
 
