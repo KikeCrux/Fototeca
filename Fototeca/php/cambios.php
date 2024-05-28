@@ -2,73 +2,51 @@
 session_start();
 
 // Verificar si el usuario está autenticado
-if (!isset($_SESSION['username'])) {
+//if (!isset($_SESSION['username'])) {
     // Si no está autenticado, redirigirlo a la página de inicio de sesión
-    header("Location: login.php");
-    exit();
-}
+    //header("Location: login.php");
+    //exit();
+//}
 
 // Si el usuario está autenticado, mostrar el nombre de usuario
-$username = $_SESSION['username'];
+//$username = $_SESSION['username'];
 
-//Realizar la conexión a la base de datos
+// Realizar la conexión a la base de datos
 $servername = "localhost";
 $db_username = "root";
 $db_password = "Sandia2016.!";
-$dbname = "FototecaBD";
+$dbname = "Fototeca_uaa";
 
 $conn = new mysqli($servername, $db_username, $db_password, $dbname);
 if ($conn->connect_error) {
     die("Error de conexión: " . $conn->connect_error);
 }
 
-#-------SeccionTecnica------------------------------
-$sql = "SELECT ID_Tecnica, NumeroInventario, ClaveTecnica, 
-               ProcesoFotografico, FondoColeccion, Formato, NumeroNegativoCopia,
-               Tipo 
-        FROM SeccionTecnica";
-
-#-----------Clave-----------------------------------
-$sql = "SELECT ID_Tecnica, ID_Cultural 
-        FROM Clave";
-
-#----------Datacion---------------------------------
-$sql = "SELECT ID_Tecnica, ID_Datacion, FechaAsunto, FechaToma 
-        FROM Datacion";
-
-#------Ubicacion Geografica-------------------------
-$sql = "SELECT ID_Tecnica, ID_Ubicacion, LugarAsunto, LugarToma 
-        FROM UbicacionGeografica";
-
-#----------Epocario--------------------------------
-$sql = "SELECT ID_Tecnica, ID_Epoca, Epoca 
-        FROM Epocario";
-
-#-----------Autoria---------------------------------
-$sql = "SELECT ID_Tecnica, ID_Autoria, Autor, AutorPrimigenio, AgenciaEstudio, 
-               EditorColeccionista, Lema 
-        FROM Autoria";
-
-#----------Indicativo--------------------------------
-$sql = "SELECT ID_Indicativo, ID_Autoria, Sello, Cuño, Firma, Etiqueta, Imprenta, Otro 
-        FROM Indicativo";
-
-#-----------Denominacion------------------------------
-$sql = "SELECT ID_Tecnica, ID_Denominacion, TituloOrigen, TituloCatalografico, TituloSerie 
-        FROM Denominacion";
-
-#-----------Descriptores------------------------------
-$sql = "SELECT ID_Tecnica, ID_Descriptores, TemaPrincipal, Descriptores 
-        FROM Descriptores";
-
-#------------Protagonistas----------------------------
-$sql = "SELECT ID_Tecnica, ID_Protagonistas, Personajes 
-        FROM Protagonistas";
-
-#------------Observaciones----------------------------
-$sql = "SELECT ID_Tecnica, ID_Observaciones, InscripcionOriginal, Conjunto, Anotaciones, 
-               NumerosInterseccion, DocumentacionAsociada 
-        FROM Observaciones";
+// Consulta unificada para obtener los datos de todas las tablas relacionadas
+$sql = "SELECT ST.ID_Tecnica, ST.NumeroInventario, ST.ClaveTecnica, 
+               ST.ProcesoFotografico, ST.FondoColeccion, ST.Formato, ST.NumeroNegativoCopia,
+               ST.Tipo,
+               C.ID_Cultural,
+               D.ID_Datacion, D.FechaAsunto, D.FechaToma,
+               UG.ID_Ubicacion, UG.LugarAsunto, UG.LugarToma,
+               E.ID_Epoca, E.Epoca,
+               A.ID_Autoria, A.Autor, A.AutorPrimigenio, A.AgenciaEstudio, A.EditorColeccionista, A.Lema,
+               I.ID_Indicativo, I.Sello, I.Cuño, I.Firma, I.Etiqueta, I.Imprenta, I.Otro,
+               DN.ID_Denominacion, DN.TituloOrigen, DN.TituloCatalografico, DN.TituloSerie,
+               DS.ID_Descriptores, DS.TemaPrincipal, DS.Descriptores,
+               P.ID_Protagonistas, P.Personajes,
+               O.ID_Observaciones, O.InscripcionOriginal, O.Conjunto, O.Anotaciones, O.NumerosInterseccion, O.DocumentacionAsociada
+        FROM SeccionTecnica ST
+        LEFT JOIN Clave C ON ST.ID_Tecnica = C.ID_Tecnica
+        LEFT JOIN Datacion D ON ST.ID_Tecnica = D.ID_Tecnica
+        LEFT JOIN UbicacionGeografica UG ON ST.ID_Tecnica = UG.ID_Tecnica
+        LEFT JOIN Epocario E ON ST.ID_Tecnica = E.ID_Tecnica
+        LEFT JOIN Autoria A ON ST.ID_Tecnica = A.ID_Tecnica
+        LEFT JOIN Indicativo I ON A.ID_Autoria = I.ID_Autoria
+        LEFT JOIN Denominacion DN ON ST.ID_Tecnica = DN.ID_Tecnica
+        LEFT JOIN Descriptores DS ON ST.ID_Tecnica = DS.ID_Tecnica
+        LEFT JOIN Protagonistas P ON ST.ID_Tecnica = P.ID_Tecnica
+        LEFT JOIN Observaciones O ON ST.ID_Tecnica = O.ID_Tecnica";
 
 $result = $conn->query($sql);
 
@@ -99,7 +77,6 @@ $conn->close();
         <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
     </div>
 
-
     <div class="container mt-5">
         <table class="table table-striped">
             <thead>
@@ -112,34 +89,21 @@ $conn->close();
                     <th>Formato</th>
                     <th>Número Negativo/Copia</th>
                     <th>Tipo</th>
-                    <th>Acciones</th>
-                </tr>
-                <tr>
                     <th>ID Cultural</th>
-                </tr>
-                <tr>
                     <th>ID Datación</th>
                     <th>Fecha Asunto</th>
                     <th>Fecha Toma</th>
-                </tr>
-                <tr>
                     <th>ID Ubicación</th>
                     <th>Lugar de Asunto</th>
                     <th>Lugar de Toma</th>
-                </tr>
-                <tr>
                     <th>ID Epoca</th>
                     <th>Epoca</th>
-                </tr>
-                <tr>
                     <th>ID Autoria</th>
                     <th>Autor</th>
                     <th>Autor Primigenio</th>
                     <th>Agencia/Estudio</th>
                     <th>Editor/Coleccionista</th>
                     <th>Lema</th>
-                </tr>
-                <tr>
                     <th>ID Indicativo</th>
                     <th>Sello</th>
                     <th>Cuño Primigenio</th>
@@ -147,29 +111,22 @@ $conn->close();
                     <th>Etiqueta</th>
                     <th>Imprenta</th>
                     <th>Otro</th>
-                </tr>
-                <tr>
-                    <th>ID Denomicnación</th>
+                    <th>ID Denominacion</th>
                     <th>Título Origen</th>
                     <th>Título Catalográfico</th>
                     <th>Título Serie</th>
-                </tr>
-                <tr>
                     <th>ID Descriptores</th>
                     <th>Tema Principal</th>
                     <th>Descriptores</th>
-                </tr>
-                <tr>
                     <th>ID Protagonistas</th>
                     <th>Personajes</th>
-                </tr>
-                <tr>
                     <th>ID Observaciones</th>
                     <th>Inscripcion Original</th>
                     <th>Conjunto</th>
                     <th>Anotaciones</th>
-                    <th>Números Interseccion</th>
+                    <th>Números Intersección</th>
                     <th>Documentacion Asociada</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -178,85 +135,55 @@ $conn->close();
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>";
                         echo "<td>" . $row["ID_Tecnica"] . "</td>";
-                        echo "<td>" . $row["NInventario"] . "</td>";
-                        echo "<td>" . $row["ClTecnica"] . "</td>";
-                        echo "<td>" . $row["PFoto"] . "</td>";
-                        echo "<td>" . $row["Fondo"] . "</td>";
+                        echo "<td>" . $row["NumeroInventario"] . "</td>";
+                        echo "<td>" . $row["ClaveTecnica"] . "</td>";
+                        echo "<td>" . $row["ProcesoFotografico"] . "</td>";
+                        echo "<td>" . $row["FondoColeccion"] . "</td>";
                         echo "<td>" . $row["Formato"] . "</td>";
-                        echo "<td>" . $row["NCopia"] . "</td>";
+                        echo "<td>" . $row["NumeroNegativoCopia"] . "</td>";
                         echo "<td>" . $row["Tipo"] . "</td>";
-                        echo "</tr>";
-
-                        echo "<tr>";
                         echo "<td>" . $row["ID_Cultural"] . "</td>";
-                        echo "</tr>";
-
-                        echo "<tr>";
                         echo "<td>" . $row["ID_Datacion"] . "</td>";
-                        echo "<td>" . $row["FechAsunto"] . "</td>";
-                        echo "<td>" . $row["FechToma"] . "</td>";
-                        echo "</tr>";
-
-                        echo "<tr>";
+                        echo "<td>" . $row["FechaAsunto"] . "</td>";
+                        echo "<td>" . $row["FechaToma"] . "</td>";
                         echo "<td>" . $row["ID_Ubicacion"] . "</td>";
                         echo "<td>" . $row["LugarAsunto"] . "</td>";
                         echo "<td>" . $row["LugarToma"] . "</td>";
-                        echo "</tr>";
-
-                        echo "<tr>";
                         echo "<td>" . $row["ID_Epoca"] . "</td>";
                         echo "<td>" . $row["Epoca"] . "</td>";
-                        echo "</tr>";
-
-                        echo "<tr>";
                         echo "<td>" . $row["ID_Autoria"] . "</td>";
                         echo "<td>" . $row["Autor"] . "</td>";
-                        echo "<td>" . $row["Autor_Primi"] . "</td>";
-                        echo "<td>" . $row["Agencia"] . "</td>";
-                        echo "<td>" . $row["Editor"] . "</td>";
+                        echo "<td>" . $row["AutorPrimigenio"] . "</td>";
+                        echo "<td>" . $row["AgenciaEstudio"] . "</td>";
+                        echo "<td>" . $row["EditorColeccionista"] . "</td>";
                         echo "<td>" . $row["Lema"] . "</td>";
-                        echo "</tr>";
-
-                        echo "<tr>";
                         echo "<td>" . $row["ID_Indicativo"] . "</td>";
                         echo "<td>" . $row["Sello"] . "</td>";
-                        echo "<td>" . $row["Cuno"] . "</td>";
+                        echo "<td>" . $row["Cuño"] . "</td>";
                         echo "<td>" . $row["Firma"] . "</td>";
                         echo "<td>" . $row["Etiqueta"] . "</td>";
                         echo "<td>" . $row["Imprenta"] . "</td>";
                         echo "<td>" . $row["Otro"] . "</td>";
-                        echo "</tr>";
-                        
-                        echo "<tr>";
                         echo "<td>" . $row["ID_Denominacion"] . "</td>";
-                        echo "<td>" . $row["TitOrigen"] . "</td>";
-                        echo "<td>" . $row["TitCatalo"] . "</td>";
-                        echo "<td>" . $row["TitSerie"] . "</td>";
-                        echo "</tr>";
-
-                        echo "<tr>";
+                        echo "<td>" . $row["TituloOrigen"] . "</td>";
+                        echo "<td>" . $row["TituloCatalografico"] . "</td>";
+                        echo "<td>" . $row["TituloSerie"] . "</td>";
                         echo "<td>" . $row["ID_Descriptores"] . "</td>";
-                        echo "<td>" . $row["TemaPrin"] . "</td>";
+                        echo "<td>" . $row["TemaPrincipal"] . "</td>";
                         echo "<td>" . $row["Descriptores"] . "</td>";
-                        echo "</tr>";
-
-                        echo "<tr>";
                         echo "<td>" . $row["ID_Protagonistas"] . "</td>";
                         echo "<td>" . $row["Personajes"] . "</td>";
-                        echo "</tr>";
-
-                        echo "<tr>";
                         echo "<td>" . $row["ID_Observaciones"] . "</td>";
-                        echo "<td>" . $row["InscripOriginal"] . "</td>";
+                        echo "<td>" . $row["InscripcionOriginal"] . "</td>";
                         echo "<td>" . $row["Conjunto"] . "</td>";
                         echo "<td>" . $row["Anotaciones"] . "</td>";
-                        echo "<td>" . $row["NInterseccion"] . "</td>";
-                        echo "<td>" . $row["DocAsociada"] . "</td>";
+                        echo "<td>" . $row["NumerosInterseccion"] . "</td>";
+                        echo "<td>" . $row["DocumentacionAsociada"] . "</td>";
+                        echo "<td><a href='procesar_cambios-t2.php?id=" . $row["ID_Tecnica"] . "' class='btn btn-primary'>Cambiar</a></td>";
                         echo "</tr>";
-                        
                     }
                 } else {
-                    echo "<tr><td colspan='9'>No hay registros para mostrar</td></tr>";
+                    echo "<tr><td colspan='46'>No hay registros para mostrar</td></tr>";
                 }
                 ?>
             </tbody>
