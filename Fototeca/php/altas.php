@@ -239,7 +239,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h3>Epocario</h3>
                 <label for="id_tecnica_epocario">ID Epoca: </label>
                 <input type="text" class="form-control" name="ID_Epoca" id="ID_Epoca"><br><br>
-                <label for="epoca">Época: </label>
+                <label for="epoca">Epoca: </label>
                 <input type="text" class="form-control" name="Epoca" id="Epoca"><br><br>
             </div>
 
