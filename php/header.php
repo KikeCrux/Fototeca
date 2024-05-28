@@ -13,8 +13,19 @@
     <!-- Barra de navegación superior -->
     <nav class="navbar nav_teca navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <!-- Enlace de la marca que podría dirigir a la página principal o dashboard -->
-            <a class="navbar-brand" href="#">Fototeca Obras UAA</a>
+            <!-- Enlace de la marca que dirige a la página según el tipo de usuario -->
+            <?php
+            // Define la URL predeterminada
+            $url = "#";
+            if (isset($_SESSION['tipoUsuario'])) {
+                if ($_SESSION['tipoUsuario'] == "Admin") {
+                    $url = "dashboard-admin.php";
+                } elseif ($_SESSION['tipoUsuario'] == "Arte") {
+                    $url = "dashboard.php";
+                }
+            }
+            ?>
+            <a class="navbar-brand" href="<?php echo $url; ?>">Obras de Arte UAA</a>
             <?php
 
             // Bloque condicional para mostrar información del usuario si está autenticado

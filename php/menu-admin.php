@@ -45,10 +45,10 @@
         </nav>
 
         <br>
-        <!-- Título para la sección de resguardantes -->
-        <h2 class="text-center">Resguardantes</h2>
+        <!-- Título para la sección de personal -->
+        <h2 class="text-center">Personal</h2>
         <br>
-        <!-- Menú para las operaciones de alta, baja, cambio y consulta de resguardantes -->
+        <!-- Menú para las operaciones de alta, baja, cambio y consulta de personal -->
         <nav class="menu navbar navbar-expand-lg">
             <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
                 <ul class="navbar-nav text-center">
@@ -69,35 +69,11 @@
         </nav>
 
         <br>
-        <!-- Título para la sección de asignados -->
-        <h2 class="text-center">Asignados</h2>
-        <br>
-        <!-- Menú para las operaciones de alta, baja, cambio y consulta de asignados -->
-        <nav class="menu2 navbar navbar-expand-lg">
-            <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-                <ul class="navbar-nav text-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="alta-t2.php">Altas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="baja-t2.php">Bajas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="cambio-t2.php">Cambios</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="consulta-t2.php">Consultas</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
-        <br>
         <!-- Título para la sección de datos generales -->
         <h2 class="text-center">Datos Generales</h2>
         <br>
         <!-- Menú para las operaciones de alta, baja, cambio y consulta de datos generales -->
-        <nav class="menu navbar navbar-expand-lg">
+        <nav class="menu2 navbar navbar-expand-lg">
             <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
                 <ul class="navbar-nav text-center">
                     <li class="nav-item">

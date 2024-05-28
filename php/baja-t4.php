@@ -7,8 +7,13 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Cargar conexión a la base de datos.
 require_once 'conexion_BD.php';
+
+$success_message = '';
+$error_message = '';
+
+// Captura el término de búsqueda si es que se envió uno
+$search = isset($_POST['search']) ? $_POST['search'] : '';
 
 // Eliminación de usuario si se proporciona un ID válido.
 if (isset($_GET['id']) && !empty($_GET['id'])) {
@@ -36,9 +41,19 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     $conn->autocommit(TRUE); // Reactiva el autocommit
 }
 
-// Consulta para obtener la lista de usuarios.
-$sql = "SELECT ID_Usuario, Usuario, TipoUsuario FROM Usuarios";
-$result = $conn->query($sql);
+// Preparar consulta SQL basada en la búsqueda
+if (!empty($search)) {
+    $sql = "SELECT ID_Usuario, Usuario, TipoUsuario FROM Usuarios WHERE Usuario LIKE ? OR ID_Usuario LIKE ?";
+    $stmt = $conn->prepare($sql);
+    $searchTerm = "%" . $search . "%";
+    $stmt->bind_param("ss", $searchTerm, $searchTerm);
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    // Consulta para obtener la lista de usuarios si no hay búsqueda.
+    $sql = "SELECT ID_Usuario, Usuario, TipoUsuario FROM Usuarios";
+    $result = $conn->query($sql);
+}
 
 // Cierra la conexión después de las operaciones.
 $conn->close();
@@ -57,26 +72,32 @@ $conn->close();
 
 <body>
     <?php
-    // Incluir encabezado con el título de la página.
     $pageTitle = "Bajas Usuarios";
     include 'header.php';
-    echo '<h1 class="text-center">Bajas de Usuarios</h1>';
-    ?>
 
-    <!-- Sección para mostrar mensajes de éxito o error. -->
-    <?php if (!empty($success_message)) : ?>
+    // Muestra mensajes de éxito o error después de intentar eliminar un registro
+    if (!empty($success_message)) : ?>
         <div id="successAlert" class="alert alert-success text-center"><?php echo $success_message; ?></div>
     <?php endif; ?>
     <?php if (!empty($error_message)) : ?>
         <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
     <?php endif; ?>
 
-    <!-- Botón para regresar a la página anterior y tabla para gestionar usuarios. -->
-    <div class="container-back">
-        <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
+    <br>
+    <h1 class="text-center">Bajas de Usuarios</h1>
+
+    <!-- Formulario de búsqueda -->
+    <div class="container mt-3">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+            <div class="form-group">
+                <input type="text" class="form-control" name="search" placeholder="Buscar por nombre o ID..." value="<?php echo htmlspecialchars($search); ?>">
+                <button type="submit" class="btn btn-primary mt-2">Buscar</button>
+            </div>
+        </form>
     </div>
+
     <div class="container mt-5">
-        <table class="table table-striped">
+        <table class="table table-striped table-hover">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -86,7 +107,6 @@ $conn->close();
                 </tr>
             </thead>
             <tbody>
-                <!-- Muestra los usuarios existentes con opciones para eliminar. -->
                 <?php
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
@@ -106,10 +126,6 @@ $conn->close();
     </div>
 
     <script>
-        // Función para manejar el regreso a la página anterior y gestionar la visibilidad de alertas.
-        function goBack() {
-            window.history.back();
-        }
         setTimeout(function() {
             var successAlert = document.getElementById("successAlert");
             var errorAlert = document.getElementById("errorAlert");

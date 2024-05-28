@@ -3,21 +3,30 @@ session_start();
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['username'])) {
-    // Si no está autenticado, redirigirlo a la página de inicio de sesión
     header("Location: login.php");
     exit();
 }
 
-// Si el usuario está autenticado, mostrar el nombre de usuario
 $username = $_SESSION['username'];
-
 require_once 'conexion_BD.php';
 
-// Consultar los registros de la tabla Usuarios
-$sql = "SELECT ID_Usuario, Usuario, TipoUsuario FROM Usuarios";
-$result = $conn->query($sql);
+// Inicializar la variable de búsqueda
+$search = isset($_POST['search']) ? $_POST['search'] : '';
 
-// Cerrar la conexión a la base de datos
+// Preparar y ejecutar la consulta de búsqueda si se ha proporcionado un término de búsqueda
+if (!empty($search)) {
+    $sql = "SELECT ID_Usuario, Usuario, TipoUsuario FROM Usuarios WHERE Usuario LIKE ? OR CAST(ID_Usuario AS CHAR) LIKE ?";
+    $stmt = $conn->prepare($sql);
+    $searchTerm = "%" . $search . "%";
+    $stmt->bind_param("ss", $searchTerm, $searchTerm);
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    // Consultar todos los registros si no hay término de búsqueda
+    $sql = "SELECT ID_Usuario, Usuario, TipoUsuario FROM Usuarios";
+    $result = $conn->query($sql);
+}
+
 $conn->close();
 ?>
 
@@ -29,19 +38,24 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consultas Usuarios</title>
     <link rel="stylesheet" href="../css/login.css">
-    <link rel="stylesheet" href="../css/tablas.css"> <!-- Asegúrate de tener un archivo CSS llamado tablas.css para aplicar estilos a la tabla -->
+    <link rel="stylesheet" href="../css/tablas.css">
 </head>
 
 <body>
-    <?php
-    $pageTitle = "Consultas Usuarios";
-    include 'header.php'; // Incluir el archivo header.php si contiene el encabezado de la página
-    echo '<br>';
-    echo '<h1 class="text-center">Consultas de Usuarios</h1>';
-    ?>
+    <?php include 'header.php'; ?>
+    <br>
+    <h1 class="text-center">Consultas de Usuarios</h1>
 
-    <div class="container-back">
-        <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
+    <!-- Formulario de búsqueda -->
+    <br>
+    <div class="container">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+            <div class="form-group">
+                <input type="text" name="search" class="form-control" placeholder="Buscar por ID o usuario" value="<?php echo $search; ?>">
+                <br>
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </form>
     </div>
 
     <div class="container mt-5">
@@ -70,12 +84,6 @@ $conn->close();
             </tbody>
         </table>
     </div>
-
-    <script>
-        function goBack() {
-            window.history.back();
-        }
-    </script>
 
 </body>
 

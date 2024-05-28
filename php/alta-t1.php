@@ -22,14 +22,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = $_POST["nombre"];
     $puesto = $_POST["puesto"];
     $observaciones = $_POST["observaciones"];
+    $clave = $_POST["clave"];  // Asumiendo que el formulario incluye un campo para 'clave'
+    $estatus = $_POST["estatus"];  // Asumiendo que el formulario incluye un menú desplegable para 'estatus'
 
     // Construcción y ejecución de la consulta SQL para inserción de datos
-    $sql = "INSERT INTO Resguardante (Nombre, PuestoDepartamento, Observaciones) 
-            VALUES ('$nombre', '$puesto', '$observaciones')";
-    if ($conn->query($sql) === TRUE) {
-        $success_message = "Resguardante registrado exitosamente.";
+    $sql = "INSERT INTO Personal (Nombre, PuestoDepartamento, Observaciones, Clave, Estatus) 
+            VALUES (?, ?, ?, ?, ?)";
+
+    // Preparar la consulta para evitar inyecciones SQL
+    if ($stmt = $conn->prepare($sql)) {
+        $stmt->bind_param("sssii", $nombre, $puesto, $observaciones, $clave, $estatus);
+        if ($stmt->execute()) {
+            $success_message = "Personal registrado exitosamente.";
+        } else {
+            $error_message = "Error al registrar el personal: " . $stmt->error;
+        }
+        $stmt->close(); // Cerrar el statement
     } else {
-        $error_message = "Error: " . $sql . "<br>" . $conn->error;
+        $error_message = "Error al preparar la consulta: " . $conn->error;
     }
 
     $conn->close(); // Cerrar conexión a la base de datos
@@ -42,17 +52,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alta de Resguardante</title>
+    <title>Alta de Personal</title>
     <link rel="stylesheet" href="../css/login.css">
 </head>
 
 <body>
     <?php
     include 'header.php'; // Incluir cabecera
-    echo '<br>';
-    echo '<h1 class="text-center">Registro de Resguardantes</h1>';
     ?>
-
     <!-- Mensajes de alerta para el usuario -->
     <?php if (!empty($success_message)) : ?>
         <div id="successAlert" class="alert alert-success text-center"><?php echo $success_message; ?></div>
@@ -61,7 +68,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
     <?php endif; ?>
 
-    <!-- Formulario de registro de resguardante -->
+    <br>
+
+    <h1 class="text-center">Registro de Personal</h1>
+
+    <!-- Formulario de registro de personal -->
     <div class="container form mt-5">
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
@@ -79,6 +90,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <textarea class="form-control" id="observaciones" name="observaciones" rows="3"></textarea>
             </div>
             <br>
+            <div class="form-group">
+                <label for="clave">Clave</label>
+                <input type="number" class="form-control" id="clave" name="clave">
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="estatus">Estatus</label>
+                <select class="form-control" id="estatus" name="estatus">
+                    <option value="1">Vigente</option>
+                    <option value="2">No Vigente</option>
+                    <option value="3">Jubilado</option>
+                </select>
+            </div>
+            <br>
             <div class="container-btn">
                 <button type="submit" class="btnEnviar">Guardar</button>
             </div>
@@ -87,18 +112,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <br>
 
-    <!-- Botón para regresar a la página anterior -->
-    <div class="container-back">
-        <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
-    </div>
-
-    <br>
-
     <script>
-        // Funcionalidad para regresar a la página anterior y manejo de alertas
-        function goBack() {
-            window.history.back();
-        }
         setTimeout(function() {
             var successAlert = document.getElementById("successAlert");
             var errorAlert = document.getElementById("errorAlert");

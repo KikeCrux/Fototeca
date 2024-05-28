@@ -1,36 +1,43 @@
 <?php
-// Inicia la sesión y verifica la autenticación del usuario
 session_start();
+
+// Verificar si el usuario está autenticado
 if (!isset($_SESSION['username'])) {
-    // Redirige a la página de inicio de sesión si el usuario no está autenticado
     header("Location: login.php");
     exit();
 }
 
-// Usuario actualmente autenticado
 $username = $_SESSION['username'];
-
-// Incluye el archivo de conexión a la base de datos
 require_once 'conexion_BD.php';
 
-// Proceso para eliminar un Resguardante basado en el ID proporcionado
-if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $id_resguardante = $_GET['id']; // ID del Resguardante a eliminar
+$success_message = '';
+$error_message = '';
 
-    // Prepara y ejecuta la consulta SQL para eliminar el registro
-    $sql = "DELETE FROM Resguardante WHERE ID_Resguardante = $id_resguardante";
-    if ($conn->query($sql) === TRUE) {
+// Maneja la eliminación de registros
+if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
+    $id_personal = $_GET['id'];
+    $sql = "DELETE FROM Personal WHERE ID_Personal = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_personal);
+    if ($stmt->execute()) {
         $success_message = "El registro se eliminó correctamente.";
     } else {
-        $error_message = "Error al eliminar el registro: " . $conn->error;
+        $error_message = "Error al eliminar el registro: " . $stmt->error;
     }
 }
 
-// Consulta para obtener todos los Resguardantes existentes
-$sql = "SELECT ID_Resguardante, Nombre, PuestoDepartamento, Observaciones FROM Resguardante";
-$result = $conn->query($sql);
+// Captura el término de búsqueda si es que se envió uno
+$search = isset($_POST['search']) ? $_POST['search'] : '';
 
-// Cierra la conexión a la base de datos después de las operaciones
+// Preparar consulta SQL basada en la búsqueda
+$sql = "SELECT ID_Personal, Nombre, PuestoDepartamento, Observaciones, Clave, Estatus FROM Personal
+        WHERE Nombre LIKE ? OR Clave LIKE ?";
+$stmt = $conn->prepare($sql);
+$searchTerm = '%' . $search . '%';
+$stmt->bind_param("ss", $searchTerm, $searchTerm);
+$stmt->execute();
+$result = $stmt->get_result();
+
 $conn->close();
 ?>
 
@@ -40,19 +47,22 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bajas Resguardante</title>
+    <title>Bajas Personal</title>
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" href="../css/tablas.css">
+    <style>
+        .status-circle {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
 </head>
 
 <body>
-    <?php
-    // Incluye la cabecera de la página
-    include 'header.php';
-    echo '<h1 class="text-center">Bajas de Resguardantes</h1>';
-    ?>
+    <?php include 'header.php'; ?>
 
-    <!-- Muestra mensajes de éxito o error después de intentar eliminar un registro -->
     <?php if (!empty($success_message)) : ?>
         <div id="successAlert" class="alert alert-success text-center"><?php echo $success_message; ?></div>
     <?php endif; ?>
@@ -60,41 +70,49 @@ $conn->close();
         <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
     <?php endif; ?>
 
-    <!-- Botón para regresar a la página anterior -->
-    <div class="container-back">
-        <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
+    <br>
+    <h1 class="text-center">Bajas de Personal</h1>
+
+    <!-- Formulario de búsqueda -->
+    <br>
+    <div class="container">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+            <div class="form-group">
+                <input type="text" name="search" class="form-control" placeholder="Buscar por nombre o clave" value="<?php echo $search; ?>">
+                <br>
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </form>
     </div>
 
-    <!-- Tabla que muestra los Resguardantes y permite la eliminación de estos -->
     <div class="container mt-5">
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Clave</th>
                     <th>Nombre</th>
                     <th>Puesto / Departamento</th>
                     <th>Observaciones</th>
+                    <th>Estatus</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
-
-                // Itera sobre cada Resguardante recuperado de la base de datos
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
+                        $statusColor = ($row["Estatus"] == "Vigente") ? "green" : "red";
                         echo "<tr>";
-                        echo "<td>" . $row["ID_Resguardante"] . "</td>";
+                        echo "<td>" . $row["Clave"] . "</td>";
                         echo "<td>" . $row["Nombre"] . "</td>";
                         echo "<td>" . $row["PuestoDepartamento"] . "</td>";
                         echo "<td>" . $row["Observaciones"] . "</td>";
-
-                        // Proporciona un enlace para eliminar el Resguardante
-                        echo "<td><a href='baja-t1.php?id=" . $row["ID_Resguardante"] . "' class='btn btn-danger'>Eliminar</a></td>";
+                        echo "<td><span class='status-circle' style='background-color: $statusColor;'></span> " . $row["Estatus"] . "</td>";
+                        echo "<td><a href='?action=delete&id=" . $row["ID_Personal"] . "' class='btn btn-danger' onclick='return confirm(\"¿Está seguro de querer eliminar este registro?\")'>Eliminar</a></td>";
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='5'>No hay registros</td></tr>";
+                    echo "<tr><td colspan='6'>No hay registros para mostrar</td></tr>";
                 }
                 ?>
             </tbody>
@@ -102,22 +120,17 @@ $conn->close();
     </div>
 
     <script>
-        // Funciones de JavaScript para mejorar la interacción del usuario
-        function goBack() {
-            window.history.back();
-        }
-
-        // Oculta los mensajes de alerta automáticamente después de un tiempo
         setTimeout(function() {
             var successAlert = document.getElementById("successAlert");
             var errorAlert = document.getElementById("errorAlert");
             if (errorAlert) {
                 errorAlert.style.display = "none";
-            } else {
+            } else if (successAlert) {
                 successAlert.style.display = "none";
             }
         }, 5000);
     </script>
+
 </body>
 
 </html>

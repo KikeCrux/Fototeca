@@ -77,10 +77,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="usuario">Usuario</label>
                 <input type="text" class="form-control" id="usuario" name="usuario" required>
             </div>
+            <br>
             <div class="form-group">
                 <label for="contraseña">Contraseña</label>
                 <input type="password" class="form-control" id="contraseña" name="contraseña" required>
             </div>
+            <br>
             <div class="form-group">
                 <label for="tipoUsuario">Tipo de Usuario</label>
                 <select class="form-control" id="tipoUsuario" name="tipoUsuario">

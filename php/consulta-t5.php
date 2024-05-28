@@ -62,10 +62,6 @@ $conn->close();
     echo '<h1 class="text-center">Consultas de inicios de sesión</h1>';
     ?>
 
-    <div class="container-back">
-        <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
-    </div>
-
     <div class="container mt-5">
         <table class="table table-striped">
             <thead>
@@ -112,11 +108,6 @@ $conn->close();
         </div>
     </div>
 
-    <script>
-        function goBack() {
-            window.history.back();
-        }
-    </script>
 </body>
 
 </html>
