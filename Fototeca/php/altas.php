@@ -100,52 +100,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     #-------SeccionTecnica------------------------------
     $sql = "INSERT INTO SeccionTecnica (ID_Tecnica, NumeroInventario, ClaveTecnica, 
                         ProcesoFotografico, FondoColeccion, Formato, NumeroNegativoCopia,
-                        Tipo) 
+                        Tipo, ID_Cultural, ID_Datacion, FechaAsunto,  FechaToma, ID_Ubicacion, 
+                        LugarAsunto,  LugarToma, , ID_Epoca, Epoca, ID_Autoria, Autor,  AutorPrimigenio, 
+                        AgenciaEstudio, EditorColeccionista, Lema, ID_Indicativo, Sello, Cuño, Firma, 
+                        Etiqueta, Imprenta, Otro, ID_Denominacion, TituloOrigen, TituloCatalografico, TituloSerie,
+                        ID_Descriptores, TemaPrincipal, Descriptores, ID_Protagonistas, Personajes,
+                        ID_Observaciones, InscripcionOriginal, Conjunto, Anotaciones, NumerosInterseccion, DocumentacionAsociada) 
             VALUES ('$ID_Tecnica', '$NInventario', '$ClTecnica', '$PFoto', '$Fondo'
-            '$Formato', '$NCopia', '$Tipo')";
-
-    #-----------Clave-----------------------------------
-    $sql = "INSERT INTO Clave (ID_Tecnica, ID_Cultural ) 
-            VALUES ('$ID_Tecnica', '$ID_Cultural')";
-
-    #----------Datacion---------------------------------
-    $sql = "INSERT INTO Datacion (ID_Tecnica, ID_Datacion, FechaAsunto,  FechaToma) 
-            VALUES ('$ID_Tecnica', '$ID_Datacion','$FechAsunto', '$FechToma')";
-
-    #------Ubicacion Geografica-------------------------
-    $sql = "INSERT INTO UbicacionGeografica (ID_Tecnica, ID_Ubicacion, LugarAsunto,  LugarToma) 
-            VALUES ('$ID_Tecnica', '$ID_Ubicacion','$LugarAsunto', '$LugarToma')";
-
-    #----------Epocario--------------------------------
-    $sql = "INSERT INTO Epocario (ID_Tecnica, ID_Epoca, Epoca) 
-            VALUES ('$ID_Tecnica', '$ID_Epoca', '$Epoca')";
-
-    #-----------Autoria---------------------------------
-    $sql = "INSERT INTO Autoria (ID_Tecnica, ID_Autoria, Autor,  AutorPrimigenio, AgenciaEstudio
-                        EditorColeccionista, Lema) 
-            VALUES ('$ID_Tecnica', '$ID_Autoria','$Autor', '$Autor_Primi', '$Agencia'
-                    '$Editor', '$Lema')";
-
-    #----------Indicativo--------------------------------
-    $sql = "INSERT INTO Indicativo (ID_Indicativo, ID_Autoria, Sello, Cuño, Firma, Etiqueta, Imprenta, Otro) 
-            VALUES ('$ID_Indicativo', '$ID_Autoria', '$Sello', '$Cuno', '$Firma', '$Etiqueta', '$Imprenta', '$Otro')";
-
-    #-----------Denominacion------------------------------
-    $sql = "INSERT INTO Denominacion (ID_Tecnica, ID_Denominacion, TituloOrigen, TituloCatalografico, TituloSerie) 
-            VALUES ('$ID_Tecnica', '$ID_Denominacion', '$TitOrigen', '$TitCatalo', '$TitSerie')";
-
-    #-----------Descriptores------------------------------
-    $sql = "INSERT INTO Descriptores (ID_Tecnica, ID_Descriptores, TemaPrincipal, Descriptores) 
-                VALUES ('$ID_Tecnica', '$ID_Descriptores', '$TemaPrin', '$Descriptores')";
-
-    #------------Protagonistas----------------------------
-    $sql = "INSERT INTO Protagonistas (ID_Tecnica, ID_Protagonistas, Personajes) 
-            VALUES ('$ID_Tecnica', '$ID_Protagonistas', '$Personajes')";
-
-    #------------Observaciones----------------------------
-    $sql = "INSERT INTO Observaciones (ID_Tecnica, ID_Observaciones, InscripcionOriginal, Conjunto, Anotaciones, NumerosInterseccion, DocumentacionAsociada) 
-            VALUES ('$ID_Tecnica', '$ID_Observaciones', '$InscripOriginal', '$Conjunto', '$Anotaciones', '$NInterseccion', '$DocAsociada')";
-
+            '$Formato', '$NCopia', '$Tipo', '$ID_Cultural', '$ID_Datacion','$FechAsunto', 
+            '$FechToma',, '$ID_Ubicacion','$LugarAsunto', '$LugarToma', '$ID_Epoca', '$Epoca',
+            '$ID_Autoria','$Autor', '$Autor_Primi', '$Agencia','$Editor', '$Lema', '$ID_Indicativo',
+            '$Sello', '$Cuno', '$Firma', '$Etiqueta', '$Imprenta', '$Otro', '$ID_Denominacion', 
+            '$TitOrigen', '$TitCatalo', '$TitSerie', '$ID_Descriptores', '$TemaPrin', '$Descriptores',
+            '$ID_Protagonistas', '$Personajes', '$ID_Observaciones', '$InscripOriginal', '$Conjunto', '$Anotaciones', '$NInterseccion', '$DocAsociada')";
 
     // Ejecutar la consulta SQL
     if ($conn->query($sql) === TRUE) {
