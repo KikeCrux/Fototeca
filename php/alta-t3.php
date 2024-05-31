@@ -14,13 +14,14 @@ $error_message = '';
 $imagenContenido = '';
 $imagenObra = '';
 
-// Consulta para obtener los datos de personal para los selectores
-$personalQuery = "SELECT ID_Personal, Nombre FROM Personal";
+// Consulta para obtener los datos de personal vigentes para los selectores
+$personalQuery = "SELECT ID_Personal, Clave, Nombre FROM Personal WHERE Estatus = 'Vigente'";
 $personalResult = $conn->query($personalQuery);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $autores = $_POST["autores"];
     $objeto = $_POST["objeto"];
+    $tipoObra = $_POST["tipoObra"];
     $ubicacion = $_POST["ubicacion"];
     $inventario = $_POST["inventario"];
     $vale = $_POST["vale"];
@@ -59,18 +60,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (!$error_message && $imagenContenido && $imagenObra) {
-        $sql = "INSERT INTO DatosGenerales (Autores, ObjetoObra, Ubicacion, NoInventario, NoVale,
+        $sql = "INSERT INTO DatosGenerales (Autores, ObjetoObra, TipoObra, Ubicacion, NoInventario, NoVale,
                 FechaPrestamo, Caracteristicas, Observaciones, ImagenOficioVale, ImagenObra, ID_Resguardante, ID_Asignado) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $conn->prepare($sql);
         if ($stmt === false) {
             $error_message = "Error al preparar la consulta: " . $conn->error;
         } else {
             $null = NULL;
-            $stmt->bind_param("ssssssssbbii", $autores, $objeto, $ubicacion, $inventario, $vale, $fechprestamo, $caracteristicas, $observaciones, $null, $null, $idResguardante, $idAsignado);
-            $stmt->send_long_data(8, $imagenContenido);
-            $stmt->send_long_data(9, $imagenObra);
+            $stmt->bind_param("ssssssssbbiii", $autores, $objeto, $tipoObra, $ubicacion, $inventario, $vale, $fechprestamo, $caracteristicas, $observaciones, $null, $null, $idResguardante, $idAsignado);
+            $stmt->send_long_data(9, $imagenContenido);
+            $stmt->send_long_data(10, $imagenObra);
             if ($stmt->execute()) {
                 $success_message = "Registro exitoso.";
             } else {
@@ -94,12 +95,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <style>
         .form-group {
             margin-bottom: 20px;
-            /* Aumenta el espacio entre los inputs */
         }
 
         .container-btn {
             margin-top: 20px;
-            /* Espacio antes del botón de enviar */
         }
     </style>
 </head>
@@ -110,7 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div id="successAlert" class="alert alert-success text-center"><?php echo $success_message; ?></div>
     <?php endif; ?>
     <?php if (!empty($error_message)) : ?>
-        <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
+        <div id="errorAlert" class="alert alert-danger text-center"><?php echo nl2br(htmlspecialchars($error_message)); ?></div>
     <?php endif; ?>
 
     <br>
@@ -125,6 +124,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="form-group">
                 <label for="objeto">Objeto / Obra</label>
                 <input type="text" class="form-control" id="objeto" name="objeto">
+            </div>
+            <div class="form-group">
+                <label for="tipoObra">Tipo de Obra</label>
+                <input type="text" class="form-control" id="tipoObra" name="tipoObra">
             </div>
             <div class="form-group">
                 <label for="ubicacion">Ubicación</label>
@@ -155,7 +158,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="idResguardante">ID Resguardante</label>
                 <select class="form-control" id="idResguardante" name="idResguardante">
                     <?php while ($personal = $personalResult->fetch_assoc()) : ?>
-                        <option value="<?php echo $personal['ID_Personal']; ?>"><?php echo $personal['Nombre']; ?></option>
+                        <option value="<?php echo $personal['ID_Personal']; ?>"><?php echo $personal['Clave'] . " - " . $personal['Nombre']; ?></option>
                     <?php endwhile; ?>
                 </select>
             </div>
@@ -166,7 +169,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // Re-query the same personal data for asignado options
                     $personalResult->data_seek(0);
                     while ($personal = $personalResult->fetch_assoc()) : ?>
-                        <option value="<?php echo $personal['ID_Personal']; ?>"><?php echo $personal['Nombre']; ?></option>
+                        <option value="<?php echo $personal['ID_Personal']; ?>"><?php echo $personal['Clave'] . " - " . $personal['Nombre']; ?></option>
                     <?php endwhile; ?>
                 </select>
             </div>

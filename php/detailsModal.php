@@ -18,8 +18,9 @@
                 <p><strong>Observaciones:</strong> <?php echo nl2br(htmlspecialchars($row['Observaciones'])); ?></p>
                 <p><strong>Imagen de Oficio/Vale:</strong> <?php echo $row['ImagenOficioVale'] ? '<a href="verPDF.php?id=' . $row['ID_DatosGenerales'] . '&type=oficio">Ver PDF</a>' : 'No disponible'; ?></p>
                 <p><strong>Imagen de Obra:</strong> <?php echo $row['ImagenObra'] ? '<a href="verPDF.php?id=' . $row['ID_DatosGenerales'] . '&type=obra">Ver PDF</a>' : 'No disponible'; ?></p>
-                <p><strong>ID Resguardante:</strong> <?php echo $row['ID_Resguardante']; ?></p>
-                <p><strong>ID Asignado:</strong> <?php echo $row['ID_Asignado']; ?></p>
+                <p><strong>Clave Resguardante:</strong> <?php echo $row['ClaveResguardante'] . " - " . $row['NombreResguardante']; ?></p>
+                <p><strong>Clave Asignado:</strong> <?php echo $row['ClaveAsignado'] . " - " . $row['NombreAsignado']; ?></p>
+                <p><strong>Tipo Obra:</strong> <?php echo htmlspecialchars($row['TipoObra']); ?></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>

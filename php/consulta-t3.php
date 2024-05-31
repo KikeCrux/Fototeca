@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Verificar si el usuario está autenticado
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
@@ -14,16 +13,25 @@ $search = isset($_POST['search']) ? $_POST['search'] : '';
 
 // Preparar y ejecutar la consulta de búsqueda si se ha proporcionado un término de búsqueda
 if (!empty($search)) {
-    $sql = "SELECT ID_DatosGenerales, Autores, ObjetoObra, Ubicacion, NoInventario, NoVale, FechaPrestamo, Caracteristicas, Observaciones, ImagenOficioVale, ImagenObra, ID_Resguardante, ID_Asignado FROM DatosGenerales
-            WHERE Autores LIKE ? OR ObjetoObra LIKE ? OR ID_Resguardante LIKE ? OR ID_Asignado LIKE ?";
+    $sql = "SELECT dg.ID_DatosGenerales, dg.Autores, dg.ObjetoObra, dg.Ubicacion, dg.NoInventario, dg.NoVale, 
+            dg.FechaPrestamo, dg.Caracteristicas, dg.Observaciones, dg.ImagenOficioVale, dg.ImagenObra, dg.TipoObra,
+            p1.Clave as ClaveResguardante, p2.Clave as ClaveAsignado, p1.Nombre as NombreResguardante, p2.Nombre as NombreAsignado
+            FROM DatosGenerales dg
+            LEFT JOIN Personal p1 ON dg.ID_Resguardante = p1.ID_Personal
+            LEFT JOIN Personal p2 ON dg.ID_Asignado = p2.ID_Personal
+            WHERE dg.Autores LIKE ? OR dg.ObjetoObra LIKE ? OR p1.Clave LIKE ? OR p2.Clave LIKE ?";
     $stmt = $conn->prepare($sql);
     $searchTerm = "%" . $search . "%";
     $stmt->bind_param("ssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm);
     $stmt->execute();
     $result = $stmt->get_result();
 } else {
-    // Consultar todos los registros si no hay término de búsqueda
-    $sql = "SELECT ID_DatosGenerales, Autores, ObjetoObra, Ubicacion, NoInventario, NoVale, FechaPrestamo, Caracteristicas, Observaciones, ImagenOficioVale, ImagenObra, ID_Resguardante, ID_Asignado FROM DatosGenerales";
+    $sql = "SELECT dg.ID_DatosGenerales, dg.Autores, dg.ObjetoObra, dg.Ubicacion, dg.NoInventario, dg.NoVale, 
+            dg.FechaPrestamo, dg.Caracteristicas, dg.Observaciones, dg.ImagenOficioVale, dg.ImagenObra, dg.TipoObra,
+            p1.Clave as ClaveResguardante, p2.Clave as ClaveAsignado, p1.Nombre as NombreResguardante, p2.Nombre as NombreAsignado
+            FROM DatosGenerales dg
+            LEFT JOIN Personal p1 ON dg.ID_Resguardante = p1.ID_Personal
+            LEFT JOIN Personal p2 ON dg.ID_Asignado = p2.ID_Personal";
     $result = $conn->query($sql);
 }
 
@@ -50,7 +58,7 @@ $conn->close();
     <div class="container mt-3">
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="input-group mb-3">
-                <input type="text" name="search" class="form-control" placeholder="Buscar por autor, objeto/obra, ID resguardante o ID asignado" value="<?php echo htmlspecialchars($search); ?>">
+                <input type="text" name="search" class="form-control" placeholder="Buscar por autor, objeto/obra, clave resguardante o clave asignado" value="<?php echo htmlspecialchars($search); ?>">
             </div>
             <button class="btn btn-primary" type="submit">Buscar</button>
         </form>
@@ -63,8 +71,8 @@ $conn->close();
                     <th>ID</th>
                     <th>Autor(es)</th>
                     <th>Objeto / Obra</th>
-                    <th>ID Resguardante</th>
-                    <th>ID Asignado</th>
+                    <th>Clave Resguardante</th>
+                    <th>Clave Asignado</th>
                     <th>Detalles</th>
                 </tr>
             </thead>
@@ -76,8 +84,8 @@ $conn->close();
                         echo "<td>" . $row["ID_DatosGenerales"] . "</td>";
                         echo "<td>" . htmlspecialchars($row["Autores"]) . "</td>";
                         echo "<td>" . htmlspecialchars($row["ObjetoObra"]) . "</td>";
-                        echo "<td>" . htmlspecialchars($row["ID_Resguardante"]) . "</td>";
-                        echo "<td>" . htmlspecialchars($row["ID_Asignado"]) . "</td>";
+                        echo "<td>" . htmlspecialchars($row["ClaveResguardante"]) . "</td>";
+                        echo "<td>" . htmlspecialchars($row["ClaveAsignado"]) . "</td>";
                         echo '<td><button class="btn btn-action" data-bs-toggle="modal" data-bs-target="#detailsModal' . $row["ID_DatosGenerales"] . '">Ver</button></td>';
                         echo "</tr>";
                     }
@@ -100,11 +108,6 @@ $conn->close();
     ?>
 
     <script src="../resources/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function goBack() {
-            window.history.back();
-        }
-    </script>
 </body>
 
 </html>

@@ -51,7 +51,7 @@
             </ul>
             <ul class="navbar-nav text-center">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Bajas</a>
+                    <a class="nav-link" href="bajas.php">Bajas</a>
                 </li>
             </ul>
             <ul class="navbar-nav text-center">

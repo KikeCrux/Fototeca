@@ -18,48 +18,23 @@ $username = $_SESSION['username'];
 $servername = "localhost";
 $db_username = "root";
 $db_password = "Sandia2016.!";
-$dbname = "fototeca_uaa";
+$dbname = "fototeca_UAA";
 
 $conn = new mysqli($servername, $db_username, $db_password, $dbname);
 if ($conn->connect_error) {
     die("Error de conexión: " . $conn->connect_error);
 }
 
-// Consultas para obtener los datos de cada tabla relacionada
-$sqlTecnica = "SELECT * FROM SeccionTecnica";
-$resultTecnica = $conn->query($sqlTecnica);
+// Consulta para obtener los datos de la tabla Fototeca
+$sql = "SELECT ID_Tecnica, NumeroInventario, ClaveTecnica, ProcesoFotografico, FondoColeccion, Formato, NumeroNegativoCopia, Tipo,
+        FechaAsunto, FechaToma, LugarAsunto, LugarToma, Epoca, 
+        Autor, AutorPrimigenio, AgenciaEstudio, EditorColeccionista, Lema, 
+        Sello, Cuño, Firma, Etiqueta, Imprenta, Otro, 
+        TituloOrigen, TituloCatalografico, TituloSerie, TemaPrincipal, Descriptores, 
+        Personajes, InscripcionOriginal, Conjunto, Anotaciones, NumerosInterseccion, DocumentacionAsociada
+    FROM Fototeca";
 
-$sqlClave = "SELECT * FROM Clave";
-$resultClave = $conn->query($sqlClave);
-
-$sqlDatacion = "SELECT * FROM Datacion";
-$resultDatacion = $conn->query($sqlDatacion);
-
-$sqlUbicacionGeografica = "SELECT * FROM UbicacionGeografica";
-$resultUbicacionGeografica = $conn->query($sqlUbicacionGeografica);
-
-$sqlEpocario = "SELECT * FROM Epocario";
-$resultEpocario = $conn->query($sqlEpocario);
-
-$sqlAutoria = "SELECT * FROM Autoria";
-$resultAutoria = $conn->query($sqlAutoria);
-
-$sqlIndicativo = "SELECT * FROM Indicativo";
-$resultIndicativo = $conn->query($sqlIndicativo);
-
-$sqlDenominacion = "SELECT * FROM Denominacion";
-$resultDenominacion = $conn->query($sqlDenominacion);
-
-$sqlDescriptores = "SELECT * FROM Descriptores";
-$resultDescriptores = $conn->query($sqlDescriptores);
-
-$sqlProtagonistas = "SELECT * FROM Protagonistas";
-$resultProtagonistas = $conn->query($sqlProtagonistas);
-
-$sqlObservaciones = "SELECT * FROM Observaciones";
-$resultObservaciones = $conn->query($sqlObservaciones);
-
-
+$result = $conn->query($sql);
 
 // Cerrar la conexión a la base de datos
 $conn->close();
@@ -71,7 +46,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Datos Técnicos</title>
+    <title>Consultas Datos</title>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" href="../css/tablas.css">
@@ -93,8 +68,8 @@ $conn->close();
                             <th>ID Técnica</th>
                             <th>Número Inventario</th>
                             <th>Clave Técnica</th>
-                            <th>Proceso Fotografico</th>
-                            <th>Fondo Coleccion</th>
+                            <th>Proceso Fotográfico</th>
+                            <th>Fondo Colección</th>
                             <th>Formato</th>
                             <th># Negativo Copia</th>
                             <th>Tipo</th>
@@ -103,7 +78,7 @@ $conn->close();
                     </thead>
                     <tbody>
                         <?php
-                        if ($result->num_rows > 0) {
+                        if ($result && $result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
                                 echo "<tr>";
                                 echo "<td>" . $row["ID_Tecnica"] . "</td>";
@@ -126,3 +101,17 @@ $conn->close();
             </div>
         </div>
     </div>
+
+    <!-- Modals for each entry -->
+    <?php
+    if ($result->num_rows > 0) {
+        $result->data_seek(0); // Reset result pointer
+        while ($row = $result->fetch_assoc()) {
+            include 'detailsModal.php'; // Include your modal file here
+        }
+    }
+    ?>
+    <script src="../resources/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

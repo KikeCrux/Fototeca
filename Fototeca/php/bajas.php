@@ -31,7 +31,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     $id_secciontecnica = $_GET['id'];
 
     // Consulta SQL para eliminar el Resguardante
-    $sql = "DELETE FROM SeccionTecnica WHERE ID_Tecnica = $id_secciontecnica";
+    $sql = "DELETE FROM Fototeca WHERE ID_Tecnica = $id_secciontecnica";
 
     if ($conn->query($sql) === TRUE) {
         // Mensaje de éxito
@@ -44,7 +44,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
 
 // Consultas para obtener los datos de cada tabla relacionada
-$sqlTecnica = "SELECT * FROM SeccionTecnica";
+$sqlTecnica = "SELECT * FROM Fototeca";
 $resultTecnica = $conn->query($sqlTecnica);
 
 // Cerrar la conexión a la base de datos
@@ -80,7 +80,7 @@ $conn->close();
         </div>
         <?php include 'header.php'; ?>
         <div class="container mt-4">
-            
+
             <div class="card">
                 <div class="card-header">
                     <strong>Sección Técnica</strong>
@@ -113,6 +113,7 @@ $conn->close();
                                     echo "<td>" . $row["Formato"] . "</td>";
                                     echo "<td>" . $row["NumeroNegativoCopia"] . "</td>";
                                     echo "<td>" . $row["Tipo"] . "</td>";
+
                                     echo "<td><a href='bajas.php?id=" . $row["ID_Tecnica"] . "' class='btn btn-danger'>Eliminar</a></td>";
                                     echo "</tr>";
                                 }
