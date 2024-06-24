@@ -14,7 +14,7 @@ require_once 'conexion_BD.php';
 
 // Realiza una consulta para obtener los registros de Datos Generales.
 $sql = "SELECT ID_DatosGenerales, Autores, ObjetoObra, Ubicacion, NoInventario, NoVale,
-                FechaPrestamo, Caracteristicas, Observaciones, ImagenOficioVale FROM DatosGenerales";
+                FechaPrestamo, Caracteristicas, Observaciones, TipoObra FROM DatosGenerales";
 $result = $conn->query($sql);
 
 // Cierra la conexión a la base de datos después de las operaciones.
@@ -38,13 +38,8 @@ $conn->close();
     // Incluye el archivo de cabecera y muestra el título de la página dinámicamente.
     $pageTitle = "Cambios Datos Generales";
     include 'header.php';
-    echo '<h1 class="text-center">Cambios de Datos Generales</h1>';
+    echo '<br><h1 class="text-center">Cambios de Datos Generales</h1>';
     ?>
-
-    <!-- Botón para regresar a la página anterior. -->
-    <div class="container-back">
-        <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
-    </div>
 
     <!-- Tabla para mostrar los datos de Datos Generales y proporcionar una acción de cambio. -->
     <div class="container mt-5">
@@ -57,9 +52,10 @@ $conn->close();
                     <th>Ubicacion</th>
                     <th>Inventario</th>
                     <th>No. Vale</th>
-                    <th>Fecha: (Prestamo)</th>
+                    <th>Fecha Prestamo</th>
                     <th>Caracteristicas</th>
                     <th>Observaciones</th>
+                    <th>Tipo Obra</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -78,23 +74,18 @@ $conn->close();
                         echo "<td>" . $row["FechaPrestamo"] . "</td>";
                         echo "<td>" . $row["Caracteristicas"] . "</td>";
                         echo "<td>" . $row["Observaciones"] . "</td>";
+                        echo "<td>" . $row["TipoObra"] . "</td>";
                         echo "<td><a href='procesar_cambios-t3.php?id=" . $row["ID_DatosGenerales"] . "' class='btn btn-primary'>Cambiar</a></td>";
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='10'>No hay registros</td></tr>";
+                    echo "<tr><td colspan='11'>No hay registros</td></tr>";
                 }
                 ?>
             </tbody>
         </table>
     </div>
 
-    <script>
-        // Función JavaScript para permitir al usuario regresar a la página anterior.
-        function goBack() {
-            window.history.back();
-        }
-    </script>
 </body>
 
 </html>

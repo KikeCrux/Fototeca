@@ -10,6 +10,7 @@
                 <p><strong>ID:</strong> <?php echo $row['ID_DatosGenerales']; ?></p>
                 <p><strong>Autores:</strong> <?php echo htmlspecialchars($row['Autores']); ?></p>
                 <p><strong>Objeto/Obra:</strong> <?php echo htmlspecialchars($row['ObjetoObra']); ?></p>
+                <p><strong>Tipo Obra:</strong> <?php echo htmlspecialchars($row['TipoObra']); ?></p>
                 <p><strong>Ubicación:</strong> <?php echo htmlspecialchars($row['Ubicacion']); ?></p>
                 <p><strong>Número de Inventario:</strong> <?php echo htmlspecialchars($row['NoInventario']); ?></p>
                 <p><strong>Número de Vale:</strong> <?php echo htmlspecialchars($row['NoVale']); ?></p>
@@ -20,7 +21,6 @@
                 <p><strong>Imagen de Obra:</strong> <?php echo $row['ImagenObra'] ? '<a href="verPDF.php?id=' . $row['ID_DatosGenerales'] . '&type=obra">Ver PDF</a>' : 'No disponible'; ?></p>
                 <p><strong>Clave Resguardante:</strong> <?php echo $row['ClaveResguardante'] . " - " . $row['NombreResguardante']; ?></p>
                 <p><strong>Clave Asignado:</strong> <?php echo $row['ClaveAsignado'] . " - " . $row['NombreAsignado']; ?></p>
-                <p><strong>Tipo Obra:</strong> <?php echo htmlspecialchars($row['TipoObra']); ?></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>

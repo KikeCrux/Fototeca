@@ -31,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idResguardante = $_POST["idResguardante"];
     $idAsignado = $_POST["idAsignado"];
 
+    // Manejo de la imagen de oficio/vale
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
         $fileTmpPath = $_FILES['imagen']['tmp_name'];
         $fileType = $_FILES['imagen']['type'];
@@ -41,10 +42,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $error_message = "Archivo de oficio/vale no válido. Asegúrese de que es un PDF y no supera los 10 MB.";
         }
-    } else {
-        $error_message = "Por favor, seleccione un archivo PDF válido para el oficio/vale.";
     }
 
+    // Manejo de la imagen de la obra
     if (isset($_FILES['imagenObra']) && $_FILES['imagenObra']['error'] === UPLOAD_ERR_OK) {
         $fileTmpPathObra = $_FILES['imagenObra']['tmp_name'];
         $fileTypeObra = $_FILES['imagenObra']['type'];
@@ -55,11 +55,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $error_message .= "\nArchivo de obra no válido. Asegúrese de que es un PDF y no supera los 10 MB.";
         }
-    } else {
-        $error_message .= "\nPor favor, seleccione un archivo PDF válido para la obra.";
     }
 
-    if (!$error_message && $imagenContenido && $imagenObra) {
+    if (!$error_message) {
         $sql = "INSERT INTO DatosGenerales (Autores, ObjetoObra, TipoObra, Ubicacion, NoInventario, NoVale,
                 FechaPrestamo, Caracteristicas, Observaciones, ImagenOficioVale, ImagenObra, ID_Resguardante, ID_Asignado) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -70,8 +68,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $null = NULL;
             $stmt->bind_param("ssssssssbbiii", $autores, $objeto, $tipoObra, $ubicacion, $inventario, $vale, $fechprestamo, $caracteristicas, $observaciones, $null, $null, $idResguardante, $idAsignado);
-            $stmt->send_long_data(9, $imagenContenido);
-            $stmt->send_long_data(10, $imagenObra);
+
+            if (!empty($imagenContenido)) {
+                $stmt->send_long_data(9, $imagenContenido);
+            }
+
+            if (!empty($imagenObra)) {
+                $stmt->send_long_data(10, $imagenObra);
+            }
+
             if ($stmt->execute()) {
                 $success_message = "Registro exitoso.";
             } else {
@@ -173,7 +178,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <?php endwhile; ?>
                 </select>
             </div>
-
 
             <div class="form-group">
                 <label for="imagen">Imagen de oficio/vale (PDF)</label>
