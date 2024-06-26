@@ -1,6 +1,6 @@
 <head>
     <!-- Enlace a la hoja de estilos para la personalización de los menús -->
-    <link rel="stylesheet" href="../css/menu-t1.css">
+    <link rel="stylesheet" href="../css/menu.css">
 </head>
 
 <div class="container">
@@ -12,16 +12,16 @@
             <!-- Lista de enlaces para las diferentes acciones de Resguardantes -->
             <ul class="navbar-nav text-center">
                 <li class="nav-item">
-                    <a class="nav-link" href="alta-t1.php">Altas</a>
+                    <a class="nav-link" href="altaPersonal.php">Altas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="baja-t1.php">Bajas</a>
+                    <a class="nav-link" href="bajaPersonal.php">Bajas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="cambio-t1.php">Cambios</a>
+                    <a class="nav-link" href="cambioPersonal.php">Cambios</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="consulta-t1.php">Consultas</a>
+                    <a class="nav-link" href="consultaPersonal.php">Consultas</a>
                 </li>
             </ul>
         </div>
@@ -36,16 +36,16 @@
             <!-- Lista de enlaces para las diferentes acciones de Datos Generales -->
             <ul class="navbar-nav text-center">
                 <li class="nav-item">
-                    <a class="nav-link" href="alta-t3.php">Altas</a>
+                    <a class="nav-link" href="altaDatosGen.php">Altas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="baja-t3.php">Bajas</a>
+                    <a class="nav-link" href="bajaDatosGen.php">Bajas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="cambio-t3.php">Cambios</a>
+                    <a class="nav-link" href="cambioDatosGen.php">Cambios</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="consulta-t3.php">Consultas</a>
+                    <a class="nav-link" href="consultaDatosGen.php">Consultas</a>
                 </li>
             </ul>
         </div>

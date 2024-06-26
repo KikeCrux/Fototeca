@@ -11,7 +11,7 @@ require_once 'conexion_BD.php';
 
 // Verificar si se recibió el ID del personal a cambiar
 if (!isset($_GET['id'])) {
-    header("Location: cambio-t1.php");
+    header("Location: cambioPersonal.php");
     exit();
 }
 
@@ -34,7 +34,7 @@ if ($result->num_rows > 0) {
     $clave = $row["Clave"];
     $estatus = $row["Estatus"];
 } else {
-    header("Location: cambio-t1.php");
+    header("Location: cambioPersonal.php");
     exit();
 }
 
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt_update->bind_param("sssssi", $nuevo_nombre, $nuevo_puesto, $nuevas_observaciones, $nueva_clave, $nuevo_estatus, $id_personal);
 
         if ($stmt_update->execute()) {
-            header("Location: cambio-t1.php?success_message=Cambios realizados exitosamente.");
+            header("Location: cambioPersonal.php?success_message=Cambios realizados exitosamente.");
             exit();
         } else {
             $error_message = "Error al realizar cambios: " . $stmt_update->error;

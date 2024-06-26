@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conn->query($insertLogSql);
 
         if ($_SESSION['tipoUsuario'] == "Admin") {
-            header("Location: dashboard-admin.php");
+            header("Location: dashboardAdmin.php");
         } elseif ($_SESSION['tipoUsuario'] == "Arte") {
             header("Location: dashboard.php");
             exit();

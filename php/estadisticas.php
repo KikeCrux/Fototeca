@@ -160,7 +160,6 @@ $conn->close();
                         <th>NoVale</th>
                         <th>FechaPrestamo</th>
                         <th>Caracteristicas</th>
-                        <th>Observaciones</th>
                         <th>TipoObra</th>
                         <th>ID_Resguardante</th>
                         <th>ID_Asignado</th>
@@ -177,7 +176,6 @@ $conn->close();
                             <td><?php echo $row['NoVale']; ?></td>
                             <td><?php echo $row['FechaPrestamo']; ?></td>
                             <td><?php echo $row['Caracteristicas']; ?></td>
-                            <td><?php echo $row['Observaciones']; ?></td>
                             <td><?php echo $row['TipoObra']; ?></td>
                             <td><?php echo $row['ID_Resguardante']; ?></td>
                             <td><?php echo $row['ID_Asignado']; ?></td>

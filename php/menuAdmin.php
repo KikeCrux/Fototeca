@@ -4,7 +4,7 @@
 <head>
     <title>Dashboard</title>
     <!-- Enlaza la hoja de estilos específica para los estilos del menú -->
-    <link rel="stylesheet" href="../css/menu-t1.css">
+    <link rel="stylesheet" href="../css/menu.css">
 </head>
 
 <body>
@@ -17,7 +17,7 @@
             <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
                 <ul class="navbar-nav text-center">
                     <li class="nav-item">
-                        <a class="nav-link" href="consulta-t5.php">Consultas</a>
+                        <a class="nav-link" href="consultaIniciosSes.php">Consultas</a>
                     </li>
                 </ul>
             </div>
@@ -32,13 +32,13 @@
             <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
                 <ul class="navbar-nav text-center">
                     <li class="nav-item">
-                        <a class="nav-link" href="alta-t4.php">Altas</a>
+                        <a class="nav-link" href="altaUsuarios.php">Altas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="baja-t4.php">Bajas</a>
+                        <a class="nav-link" href="bajaUsuarios.php">Bajas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="consulta-t4.php">Consultas</a>
+                        <a class="nav-link" href="consultaUsuarios.php">Consultas</a>
                     </li>
                 </ul>
             </div>
@@ -53,16 +53,16 @@
             <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
                 <ul class="navbar-nav text-center">
                     <li class="nav-item">
-                        <a class="nav-link" href="alta-t1.php">Altas</a>
+                        <a class="nav-link" href="altaPersonal.php">Altas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="baja-t1.php">Bajas</a>
+                        <a class="nav-link" href="bajaPersonal.php">Bajas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="cambio-t1.php">Cambios</a>
+                        <a class="nav-link" href="cambioPersonal.php">Cambios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="consulta-t1.php">Consultas</a>
+                        <a class="nav-link" href="consultaPersonal.php">Consultas</a>
                     </li>
                 </ul>
             </div>
@@ -77,16 +77,16 @@
             <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
                 <ul class="navbar-nav text-center">
                     <li class="nav-item">
-                        <a class="nav-link" href="alta-t3.php">Altas</a>
+                        <a class="nav-link" href="altaDatosGen.php">Altas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="baja-t3.php">Bajas</a>
+                        <a class="nav-link" href="bajaDatosGen.php">Bajas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="cambio-t3.php">Cambios</a>
+                        <a class="nav-link" href="cambioDatosGen.php">Cambios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="consulta-t3.php">Consultas</a>
+                        <a class="nav-link" href="consultaDatosGen.php">Consultas</a>
                     </li>
                 </ul>
             </div>

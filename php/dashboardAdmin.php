@@ -28,7 +28,7 @@ $username = $_SESSION['username'];
     <br>
     <?php
     // Incluye el menú específico para administradores, controlando el acceso a funcionalidades específicas
-    include 'menu-admin.php';
+    include 'menuAdmin.php';
     ?>
 
 </body>

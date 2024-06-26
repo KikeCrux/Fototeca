@@ -9,7 +9,7 @@ if (!isset($_SESSION['username'])) {
 require_once 'conexion_BD.php';
 
 if (!isset($_GET['id'])) {
-    header("Location: cambio-t3.php");
+    header("Location: cambioDatosGen.php");
     exit();
 }
 
@@ -24,7 +24,7 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
 } else {
-    header("Location: cambio-t3.php");
+    header("Location: cambioDatosGen.php");
     exit();
 }
 
@@ -104,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         if ($conn->query($sql) === TRUE) {
-            header("Location: cambio-t3.php?success_message=Cambios realizados exitosamente.");
+            header("Location: cambioDatosGen.php?success_message=Cambios realizados exitosamente.");
             exit();
         } else {
             $error_message = "Error al realizar cambios: " . $conn->error;

@@ -19,7 +19,7 @@
             $url = "#";
             if (isset($_SESSION['tipoUsuario'])) {
                 if ($_SESSION['tipoUsuario'] == "Admin") {
-                    $url = "dashboard-admin.php";
+                    $url = "dashboardAdmin.php";
                 } elseif ($_SESSION['tipoUsuario'] == "Arte") {
                     $url = "dashboard.php";
                 }
