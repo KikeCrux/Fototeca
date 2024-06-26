@@ -73,12 +73,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $pageTitle = "Login";
     include 'header.php';
     ?>
-    <br>
-    <h2 class="text-center">Iniciar sesión</h2>
-
     <?php if (!empty($error_message)) : ?>
         <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
     <?php endif; ?>
+    <br>
+    <h2 class="text-center">Iniciar sesión</h2>
 
     <div class="container form mt-5">
         <br>

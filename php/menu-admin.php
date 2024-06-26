@@ -91,7 +91,21 @@
                 </ul>
             </div>
         </nav>
+
         <br>
+        <!-- Título para la sección de personal -->
+        <h2 class="text-center">Estadisticas</h2>
+        <br>
+        <!-- Menú para las operaciones de alta, baja, cambio y consulta de personal -->
+        <nav class="menu navbar navbar-expand-lg">
+            <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+                <ul class="navbar-nav text-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="estadisticas.php">Consultas</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
     </div>
 </body>
 
