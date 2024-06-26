@@ -46,39 +46,73 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nuevo_resguardante = $_POST['idResguardante'];
     $nuevo_asignado = $_POST['idAsignado'];
 
-    $sql = "UPDATE DatosGenerales SET Autores=?, ObjetoObra=?, Ubicacion=?, NoInventario=?, NoVale=?, FechaPrestamo=?, 
-            Caracteristicas=?, Observaciones=?, TipoObra=?, ID_Resguardante=?, ID_Asignado=? WHERE ID_DatosGenerales=?";
-    $stmt = $conn->prepare($sql);
-    if ($stmt === false) {
-        $error_message = "Error al preparar la consulta: " . $conn->error;
-    } else {
-        $stmt->bind_param(
-            "ssssssssiiii",
-            $nuevos_autores,
-            $nuevo_objeto,
-            $nueva_ubicacion,
-            $nuevo_inventario,
-            $nuevo_vale,
-            $nueva_fechprestamo,
-            $nuevas_caracteristicas,
-            $nuevas_observaciones,
-            $nuevo_tipo_obra,
-            $nuevo_resguardante,
-            $nuevo_asignado,
-            $id_DatosGenerales
-        );
+    $imagenContenido = '';
+    $imagenObra = '';
 
-        if ($stmt->execute()) {
+    // Manejo de la imagen de oficio/vale
+    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['imagen']['tmp_name'];
+        $fileType = $_FILES['imagen']['type'];
+        $fileSize = $_FILES['imagen']['size'];
+
+        if ($fileType == 'application/pdf' && $fileSize <= 10000000) { // 10 MB limit
+            $imagenContenido = file_get_contents($fileTmpPath);
+            $imagenContenido = $conn->real_escape_string($imagenContenido);
+        } else {
+            $error_message = "Archivo de oficio/vale no válido. Asegúrese de que es un PDF y no supera los 10 MB.";
+        }
+    }
+
+    // Manejo de la imagen de la obra
+    if (isset($_FILES['imagenObra']) && $_FILES['imagenObra']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPathObra = $_FILES['imagenObra']['tmp_name'];
+        $fileTypeObra = $_FILES['imagenObra']['type'];
+        $fileSizeObra = $_FILES['imagenObra']['size'];
+
+        if ($fileTypeObra == 'application/pdf' && $fileSizeObra <= 10000000) { // 10 MB limit
+            $imagenObra = file_get_contents($fileTmpPathObra);
+            $imagenObra = $conn->real_escape_string($imagenObra);
+        } else {
+            $error_message .= "\nArchivo de obra no válido. Asegúrese de que es un PDF y no supera los 10 MB.";
+        }
+    }
+
+    if (!$error_message) {
+        if (!empty($imagenContenido) && !empty($imagenObra)) {
+            $sql = "UPDATE DatosGenerales SET Autores='$nuevos_autores', ObjetoObra='$nuevo_objeto', Ubicacion='$nueva_ubicacion', 
+                    NoInventario='$nuevo_inventario', NoVale='$nuevo_vale', FechaPrestamo='$nueva_fechprestamo', 
+                    Caracteristicas='$nuevas_caracteristicas', Observaciones='$nuevas_observaciones', TipoObra='$nuevo_tipo_obra', 
+                    ImagenOficioVale='$imagenContenido', ImagenObra='$imagenObra', ID_Resguardante=$nuevo_resguardante, 
+                    ID_Asignado=$nuevo_asignado WHERE ID_DatosGenerales=$id_DatosGenerales";
+        } elseif (!empty($imagenContenido)) {
+            $sql = "UPDATE DatosGenerales SET Autores='$nuevos_autores', ObjetoObra='$nuevo_objeto', Ubicacion='$nueva_ubicacion', 
+                    NoInventario='$nuevo_inventario', NoVale='$nuevo_vale', FechaPrestamo='$nueva_fechprestamo', 
+                    Caracteristicas='$nuevas_caracteristicas', Observaciones='$nuevas_observaciones', TipoObra='$nuevo_tipo_obra', 
+                    ImagenOficioVale='$imagenContenido', ID_Resguardante=$nuevo_resguardante, ID_Asignado=$nuevo_asignado 
+                    WHERE ID_DatosGenerales=$id_DatosGenerales";
+        } elseif (!empty($imagenObra)) {
+            $sql = "UPDATE DatosGenerales SET Autores='$nuevos_autores', ObjetoObra='$nuevo_objeto', Ubicacion='$nueva_ubicacion', 
+                    NoInventario='$nuevo_inventario', NoVale='$nuevo_vale', FechaPrestamo='$nueva_fechprestamo', 
+                    Caracteristicas='$nuevas_caracteristicas', Observaciones='$nuevas_observaciones', TipoObra='$nuevo_tipo_obra', 
+                    ImagenObra='$imagenObra', ID_Resguardante=$nuevo_resguardante, ID_Asignado=$nuevo_asignado 
+                    WHERE ID_DatosGenerales=$id_DatosGenerales";
+        } else {
+            $sql = "UPDATE DatosGenerales SET Autores='$nuevos_autores', ObjetoObra='$nuevo_objeto', Ubicacion='$nueva_ubicacion', 
+                    NoInventario='$nuevo_inventario', NoVale='$nuevo_vale', FechaPrestamo='$nueva_fechprestamo', 
+                    Caracteristicas='$nuevas_caracteristicas', Observaciones='$nuevas_observaciones', TipoObra='$nuevo_tipo_obra', 
+                    ID_Resguardante=$nuevo_resguardante, ID_Asignado=$nuevo_asignado WHERE ID_DatosGenerales=$id_DatosGenerales";
+        }
+
+        if ($conn->query($sql) === TRUE) {
             header("Location: cambio-t3.php?success_message=Cambios realizados exitosamente.");
             exit();
         } else {
-            $error_message = "Error al realizar cambios: " . $stmt->error;
+            $error_message = "Error al realizar cambios: " . $conn->error;
         }
-        $stmt->close();
     }
-}
 
-$conn->close();
+    $conn->close();
+}
 ?>
 
 <!DOCTYPE html>
@@ -109,7 +143,7 @@ $conn->close();
         <?php if (!empty($error_message)) : ?>
             <div class="alert alert-danger text-center"><?php echo $error_message; ?></div>
         <?php endif; ?>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id=' . $id_DatosGenerales; ?>" method="post">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id=' . $id_DatosGenerales; ?>" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="autores">Nuevos Autor(ES):</label>
                 <input type="text" class="form-control" id="autores" name="autores" value="<?php echo htmlspecialchars($row['Autores']); ?>" required>
@@ -169,9 +203,24 @@ $conn->close();
                     <?php endwhile; ?>
                 </select>
             </div>
+            <div class="form-group">
+                <label for="imagen">Nueva imagen de oficio/vale (PDF)</label>
+                <input type="file" class="form-control" id="imagen" name="imagen">
+                <?php if (!empty($row['ImagenOficioVale'])) : ?>
+                    <small>Un archivo ya está guardado. Subir uno nuevo reemplazará el existente.</small>
+                <?php endif; ?>
+            </div>
+            <div class="form-group">
+                <label for="imagenObra">Nueva imagen de la obra (PDF)</label>
+                <input type="file" class="form-control" id="imagenObra" name="imagenObra">
+                <?php if (!empty($row['ImagenObra'])) : ?>
+                    <small>Un archivo ya está guardado. Subir uno nuevo reemplazará el existente.</small>
+                <?php endif; ?>
+            </div>
             <br>
             <button type="submit" class="btn btn-primary">Guardar cambios</button>
         </form>
+        <br>
     </div>
 </body>
 

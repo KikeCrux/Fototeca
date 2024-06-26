@@ -58,8 +58,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php
     // Incluye la cabecera de la página web
     include 'header.php';
-    echo '<br>';
-    echo '<h1 class="text-center">Registro de Usuarios</h1>';
     ?>
 
     <!-- Sección para mostrar mensajes de éxito o error -->
@@ -69,6 +67,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php if (!empty($error_message)) : ?>
         <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
     <?php endif; ?>
+
+    <br>
+    <h1 class="text-center">Registro de Usuarios</h1>
 
     <!-- Formulario para la creación de un nuevo usuario -->
     <div class="container form mt-5">
@@ -97,17 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
     </div>
 
-    <!-- Botón para regresar a la página anterior -->
-    <div class="container-back">
-        <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
-    </div>
-
     <script>
-        // Función para regresar a la página anterior
-        function goBack() {
-            window.history.back();
-        }
-
         // Función para ocultar las alertas después de un cierto tiempo
         setTimeout(function() {
             var successAlert = document.getElementById("successAlert");

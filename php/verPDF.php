@@ -15,7 +15,7 @@ if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
 
     // Prepara la consulta SQL para seleccionar el documento PDF
-    $sql = "SELECT ImagenOficioVale FROM DatosGenerales WHERE ID_DatosGenerales = ?";
+    $sql = "SELECT ImagenOficioVale, ImagenObra FROM DatosGenerales WHERE ID_DatosGenerales = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -24,10 +24,17 @@ if (isset($_GET['id'])) {
     // Verifica si se encontró un registro con el ID proporcionado
     if ($stmt->num_rows > 0) {
         // Extrae el contenido del documento PDF
-        $stmt->bind_result($pdf);
+        $stmt->bind_result($pdfOficio, $pdfObra);
         $stmt->fetch();
         $stmt->close();
         $conn->close();
+
+        // Comprobar cuál PDF mostrar basado en un parámetro adicional en la URL
+        if (isset($_GET['type']) && $_GET['type'] == 'obra') {
+            $pdf = $pdfObra;
+        } else {
+            $pdf = $pdfOficio;
+        }
 
         // Configura los encabezados para la respuesta HTTP para mostrar el PDF
         header('Content-Type: application/pdf');

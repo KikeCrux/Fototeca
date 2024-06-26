@@ -67,9 +67,18 @@ $conn->close();
     // Incluye el encabezado de la página web, mostrando el título de la página.
     $pageTitle = "Bajas Datos Generales";
     include 'header.php';
-    echo '<br>';
-    echo '<h1 class="text-center">Bajas de Datos Generales</h1>';
     ?>
+
+    <!-- Sección para mostrar mensajes de éxito o error tras las operaciones de eliminación. -->
+    <?php if (!empty($success_message)) : ?>
+        <div id="successAlert" class="alert alert-success text-center"><?php echo $success_message; ?></div>
+    <?php endif; ?>
+    <?php if (!empty($error_message)) : ?>
+        <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
+    <?php endif; ?>
+
+    <br>
+    <h1 class="text-center">Bajas de Datos Generales</h1>
 
     <!-- Formulario de búsqueda -->
     <div class="container mt-3">
@@ -80,14 +89,6 @@ $conn->close();
             <button class="btn btn-primary" type="submit">Buscar</button>
         </form>
     </div>
-
-    <!-- Sección para mostrar mensajes de éxito o error tras las operaciones de eliminación. -->
-    <?php if (!empty($success_message)) : ?>
-        <div id="successAlert" class="alert alert-success text-center"><?php echo $success_message; ?></div>
-    <?php endif; ?>
-    <?php if (!empty($error_message)) : ?>
-        <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
-    <?php endif; ?>
 
     <!--Tabla para visualizar los registros de Datos Generales. -->
     <div class="container mt-5">

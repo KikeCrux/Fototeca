@@ -12,10 +12,25 @@ $username = $_SESSION['username'];
 // Incluye el script de conexión a la base de datos.
 require_once 'conexion_BD.php';
 
+// Obtener el término de búsqueda si se envió.
+$search = isset($_POST['search']) ? $_POST['search'] : '';
+
 // Realiza una consulta para obtener los registros de Datos Generales.
-$sql = "SELECT ID_DatosGenerales, Autores, ObjetoObra, Ubicacion, NoInventario, NoVale,
-                FechaPrestamo, Caracteristicas, Observaciones, TipoObra FROM DatosGenerales";
-$result = $conn->query($sql);
+if (!empty($search)) {
+    $sql = "SELECT ID_DatosGenerales, Autores, ObjetoObra, Ubicacion, NoInventario, NoVale,
+            FechaPrestamo, Caracteristicas, Observaciones, TipoObra 
+            FROM DatosGenerales 
+            WHERE ID_DatosGenerales LIKE ? OR Autores LIKE ? OR ObjetoObra LIKE ?";
+    $stmt = $conn->prepare($sql);
+    $searchTerm = '%' . $search . '%';
+    $stmt->bind_param("sss", $searchTerm, $searchTerm, $searchTerm);
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    $sql = "SELECT ID_DatosGenerales, Autores, ObjetoObra, Ubicacion, NoInventario, NoVale,
+            FechaPrestamo, Caracteristicas, Observaciones, TipoObra FROM DatosGenerales";
+    $result = $conn->query($sql);
+}
 
 // Cierra la conexión a la base de datos después de las operaciones.
 $conn->close();
@@ -40,6 +55,16 @@ $conn->close();
     include 'header.php';
     echo '<br><h1 class="text-center">Cambios de Datos Generales</h1>';
     ?>
+
+    <!-- Formulario de búsqueda -->
+    <div class="container mt-3">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+            <div class="input-group mb-3">
+                <input type="text" name="search" class="form-control" placeholder="Buscar por ID, Autor o Objeto/Obra" value="<?php echo htmlspecialchars($search); ?>">
+            </div>
+            <button class="btn btn-primary" type="submit">Buscar</button>
+        </form>
+    </div>
 
     <!-- Tabla para mostrar los datos de Datos Generales y proporcionar una acción de cambio. -->
     <div class="container mt-5">

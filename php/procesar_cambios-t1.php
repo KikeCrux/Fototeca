@@ -46,16 +46,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nueva_clave = $_POST['clave'];
     $nuevo_estatus = $_POST['estatus'];
 
-    // Actualizar el registro en la base de datos
-    $sql_update = "UPDATE Personal SET Nombre=?, PuestoDepartamento=?, Observaciones=?, Clave=?, Estatus=? WHERE ID_Personal=?";
-    $stmt_update = $conn->prepare($sql_update);
-    $stmt_update->bind_param("sssssi", $nuevo_nombre, $nuevo_puesto, $nuevas_observaciones, $nueva_clave, $nuevo_estatus, $id_personal);
+    // Verificar si se está cambiando el estatus a "No Vigente" o "Jubilado"
+    if (($nuevo_estatus == 'No Vigente' || $nuevo_estatus == 'Jubilado') && $estatus == 'Vigente') {
+        // Verificar si el personal tiene obras asignadas como resguardante o asignado
+        $checkSql = "SELECT COUNT(*) AS count FROM DatosGenerales WHERE ID_Resguardante = ? OR ID_Asignado = ?";
+        $checkStmt = $conn->prepare($checkSql);
+        $checkStmt->bind_param("ii", $id_personal, $id_personal);
+        $checkStmt->execute();
+        $checkResult = $checkStmt->get_result();
+        $checkRow = $checkResult->fetch_assoc();
 
-    if ($stmt_update->execute()) {
-        header("Location: cambio-t1.php?success_message=Cambios realizados exitosamente.");
-        exit();
-    } else {
-        $error_message = "Error al realizar cambios: " . $stmt_update->error;
+        if ($checkRow['count'] > 0) {
+            $error_message = "No se puede cambiar el estatus porque el personal está asociado a obras como resguardante o asignado.";
+        }
+    }
+
+    if (empty($error_message)) {
+        // Actualizar el registro en la base de datos
+        $sql_update = "UPDATE Personal SET Nombre=?, PuestoDepartamento=?, Observaciones=?, Clave=?, Estatus=? WHERE ID_Personal=?";
+        $stmt_update = $conn->prepare($sql_update);
+        $stmt_update->bind_param("sssssi", $nuevo_nombre, $nuevo_puesto, $nuevas_observaciones, $nueva_clave, $nuevo_estatus, $id_personal);
+
+        if ($stmt_update->execute()) {
+            header("Location: cambio-t1.php?success_message=Cambios realizados exitosamente.");
+            exit();
+        } else {
+            $error_message = "Error al realizar cambios: " . $stmt_update->error;
+        }
     }
 }
 

@@ -29,8 +29,8 @@ if (isset($_GET['pagina'])) {
 // Calcular el inicio de los registros a mostrar en la página actual
 $inicio = ($paginaActual - 1) * $registrosPorPagina;
 
-// Consultar los registros de la tabla UserLogs para la página actual
-$sql = "SELECT ID_Log, ID_Usuario, FechaHora, IP FROM UserLogs LIMIT $inicio, $registrosPorPagina";
+// Consultar los registros de la tabla UserLogs para la página actual, ordenados por FechaHora en orden descendente
+$sql = "SELECT ID_Log, ID_Usuario, FechaHora, IP FROM UserLogs ORDER BY FechaHora DESC LIMIT $inicio, $registrosPorPagina";
 $result = $conn->query($sql);
 
 // Obtener el total de registros en la tabla

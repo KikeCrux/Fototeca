@@ -16,13 +16,26 @@ $error_message = '';
 // Maneja la eliminación de registros
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
     $id_personal = $_GET['id'];
-    $sql = "DELETE FROM Personal WHERE ID_Personal = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id_personal);
-    if ($stmt->execute()) {
-        $success_message = "El registro se eliminó correctamente.";
+
+    // Verificar si el personal tiene obras como resguardante o asignado
+    $checkSql = "SELECT COUNT(*) AS count FROM DatosGenerales WHERE ID_Resguardante = ? OR ID_Asignado = ?";
+    $checkStmt = $conn->prepare($checkSql);
+    $checkStmt->bind_param("ii", $id_personal, $id_personal);
+    $checkStmt->execute();
+    $checkResult = $checkStmt->get_result();
+    $checkRow = $checkResult->fetch_assoc();
+
+    if ($checkRow['count'] > 0) {
+        $error_message = "No se puede eliminar el registro porque está asociado a obras como resguardante o asignado.";
     } else {
-        $error_message = "Error al eliminar el registro: " . $stmt->error;
+        $sql = "DELETE FROM Personal WHERE ID_Personal = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id_personal);
+        if ($stmt->execute()) {
+            $success_message = "El registro se eliminó correctamente.";
+        } else {
+            $error_message = "Error al eliminar el registro: " . $stmt->error;
+        }
     }
 }
 

@@ -39,6 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($fileType == 'application/pdf' && $fileSize <= 10000000) { // 10 MB limit
             $imagenContenido = file_get_contents($fileTmpPath);
+            $imagenContenido = $conn->real_escape_string($imagenContenido);
         } else {
             $error_message = "Archivo de oficio/vale no válido. Asegúrese de que es un PDF y no supera los 10 MB.";
         }
@@ -52,6 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($fileTypeObra == 'application/pdf' && $fileSizeObra <= 10000000) { // 10 MB limit
             $imagenObra = file_get_contents($fileTmpPathObra);
+            $imagenObra = $conn->real_escape_string($imagenObra);
         } else {
             $error_message .= "\nArchivo de obra no válido. Asegúrese de que es un PDF y no supera los 10 MB.";
         }
@@ -60,29 +62,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!$error_message) {
         $sql = "INSERT INTO DatosGenerales (Autores, ObjetoObra, TipoObra, Ubicacion, NoInventario, NoVale,
                 FechaPrestamo, Caracteristicas, Observaciones, ImagenOficioVale, ImagenObra, ID_Resguardante, ID_Asignado) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                VALUES ('$autores', '$objeto', '$tipoObra', '$ubicacion', '$inventario', '$vale', '$fechprestamo', '$caracteristicas', '$observaciones', '$imagenContenido', '$imagenObra', $idResguardante, $idAsignado)";
 
-        $stmt = $conn->prepare($sql);
-        if ($stmt === false) {
-            $error_message = "Error al preparar la consulta: " . $conn->error;
+        if ($conn->query($sql) === TRUE) {
+            $success_message = "Registro exitoso.";
         } else {
-            $null = NULL;
-            $stmt->bind_param("ssssssssbbiii", $autores, $objeto, $tipoObra, $ubicacion, $inventario, $vale, $fechprestamo, $caracteristicas, $observaciones, $null, $null, $idResguardante, $idAsignado);
-
-            if (!empty($imagenContenido)) {
-                $stmt->send_long_data(9, $imagenContenido);
-            }
-
-            if (!empty($imagenObra)) {
-                $stmt->send_long_data(10, $imagenObra);
-            }
-
-            if ($stmt->execute()) {
-                $success_message = "Registro exitoso.";
-            } else {
-                $error_message = "Error al registrar: " . $stmt->error;
-            }
-            $stmt->close();
+            $error_message = "Error al registrar: " . $conn->error;
         }
     }
     $conn->close();

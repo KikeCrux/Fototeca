@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Verificar si el usuario está autenticado
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
@@ -26,7 +25,7 @@ if (!empty($search)) {
     $result = $conn->query($sql);
 }
 
-$conn->close();
+// No cerrar la conexión aquí
 ?>
 
 <!DOCTYPE html>
@@ -36,6 +35,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consultas Personal</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" href="../css/tablas.css">
     <style>
@@ -74,6 +74,7 @@ $conn->close();
                     <th>Puesto / Departamento</th>
                     <th>Observaciones</th>
                     <th>Estatus</th>
+                    <th>Detalles</th>
                 </tr>
             </thead>
             <tbody>
@@ -87,24 +88,33 @@ $conn->close();
                         echo "<td>" . $row["PuestoDepartamento"] . "</td>";
                         echo "<td>" . $row["Observaciones"] . "</td>";
                         echo "<td><span class='status-circle' style='background-color: $statusColor;'></span> " . $row["Estatus"] . "</td>";
+                        echo '<td><button class="btn btn-action" data-bs-toggle="modal" data-bs-target="#detailsModal' . $row["ID_Personal"] . '">Ver</button></td>';
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='5'>No hay registros</td></tr>";
+                    echo "<tr><td colspan='6'>No hay registros</td></tr>";
                 }
                 ?>
             </tbody>
         </table>
-        <div class="container-back">
-            <button onclick="goBack()" class="btn btn-secondary">Regresar</button>
-        </div>
     </div>
 
-    <script>
-        function goBack() {
-            window.history.back();
+    <!-- Modals for each entry -->
+    <?php
+    if ($result->num_rows > 0) {
+        $result->data_seek(0); // Reset result pointer
+        while ($row = $result->fetch_assoc()) {
+            include 'detailsModal-2.php'; // Include your modal file here
         }
-    </script>
+    }
+    ?>
+
+    <script src="../resources/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
+
+<?php
+// Cerrar la conexión aquí después de incluir todos los modales
+$conn->close();
+?>
