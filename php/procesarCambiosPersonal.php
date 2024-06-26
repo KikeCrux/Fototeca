@@ -89,7 +89,6 @@ $conn->close();
     <style>
         .form-group {
             margin-bottom: 20px;
-            /* Espacio entre campos */
         }
     </style>
 </head>

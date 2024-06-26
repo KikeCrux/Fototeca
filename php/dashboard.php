@@ -29,7 +29,7 @@ $username = $_SESSION['username'];
     <br>
 
     <?php
-    // Incluye el menú específico del tipo de usuario T1, que puede tener enlaces específicos a funciones o módulos
+    // Incluye el menú específico del tipo de usuario Arte, que puede tener enlaces específicos a funciones o módulos
     include 'menuArte.php';
     ?>
 

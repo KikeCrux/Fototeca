@@ -194,7 +194,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="idAsignado">Nuevo ID Asignado:</label>
                 <select class="form-control" id="idAsignado" name="idAsignado">
                     <?php
-                    // Re-query the same personal data for asignado options
                     $personalResult->data_seek(0);
                     while ($personal = $personalResult->fetch_assoc()) : ?>
                         <option value="<?php echo $personal['ID_Personal']; ?>" <?php if ($row['ID_Asignado'] == $personal['ID_Personal']) echo 'selected'; ?>>

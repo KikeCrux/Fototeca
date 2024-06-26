@@ -97,12 +97,12 @@ $conn->close();
         </table>
     </div>
 
-    <!-- Modals for each entry -->
+    <!-- Modals por cada renglon -->
     <?php
     if ($result->num_rows > 0) {
-        $result->data_seek(0); // Reset result pointer
+        $result->data_seek(0); // Resetea el puntero del resultado
         while ($row = $result->fetch_assoc()) {
-            include 'obrasModalDatosGen.php'; // Include your modal file here
+            include 'obrasModalDatosGen.php'; // Inclucion del modal
         }
     }
     ?>

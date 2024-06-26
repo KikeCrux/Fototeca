@@ -1,4 +1,4 @@
-<!-- Modal Structure -->
+<!-- Estructura de Modal para obras Personal -->
 <div class="modal fade" id="detailsModal<?php echo $row['ID_Personal']; ?>" tabindex="-1" aria-labelledby="detailsModalLabel<?php echo $row['ID_Personal']; ?>" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">

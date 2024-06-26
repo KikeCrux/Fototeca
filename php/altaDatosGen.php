@@ -1,12 +1,24 @@
 <?php
+
+/*
+ * Página para registrar datos generales.
+ * Verifica la sesión del usuario antes de permitir el acceso.
+ */
+
 session_start();
 
+// Redirige a la página de inicio de sesión si no hay sesión activa
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
 
 $username = $_SESSION['username'];
+
+/*
+ * Incluye el encabezado y define variables para mensajes de éxito y error.
+ * También inicializa variables para manejar imágenes de oficio/vale y de obra.
+ */
 require_once 'conexion_BD.php';
 
 $success_message = '';
@@ -14,11 +26,18 @@ $error_message = '';
 $imagenContenido = '';
 $imagenObra = '';
 
-// Consulta para obtener los datos de personal vigentes para los selectores
+/*
+ * Consulta SQL para obtener datos de personal vigente para selectores.
+ */
 $personalQuery = "SELECT ID_Personal, Clave, Nombre FROM Personal WHERE Estatus = 'Vigente'";
 $personalResult = $conn->query($personalQuery);
 
+/*
+ * Procesamiento del formulario enviado por POST.
+ * Valida y guarda los datos ingresados, incluyendo manejo de archivos PDF.
+ */
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Recoge datos del formulario
     $autores = $_POST["autores"];
     $objeto = $_POST["objeto"];
     $tipoObra = $_POST["tipoObra"];
@@ -59,6 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    // Inserta los datos en la base de datos si no hay errores
     if (!$error_message) {
         $sql = "INSERT INTO DatosGenerales (Autores, ObjetoObra, TipoObra, Ubicacion, NoInventario, NoVale,
                 FechaPrestamo, Caracteristicas, Observaciones, ImagenOficioVale, ImagenObra, ID_Resguardante, ID_Asignado) 
@@ -94,6 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
+    <!-- Mensajes de alerta exitosa o error en las altas -->
     <?php include 'header.php'; ?>
     <?php if (!empty($success_message)) : ?>
         <div id="successAlert" class="alert alert-success text-center"><?php echo $success_message; ?></div>
@@ -105,6 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <br>
     <h1 class="text-center">Registro de Datos Generales</h1>
 
+    <!-- Formulario de altas Datos Generales -->
     <div class="container form mt-5">
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
             <div class="form-group">
@@ -156,7 +178,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="idAsignado">ID Asignado</label>
                 <select class="form-control" id="idAsignado" name="idAsignado">
                     <?php
-                    // Re-query the same personal data for asignado options
                     $personalResult->data_seek(0);
                     while ($personal = $personalResult->fetch_assoc()) : ?>
                         <option value="<?php echo $personal['ID_Personal']; ?>"><?php echo $personal['Clave'] . " - " . $personal['Nombre']; ?></option>

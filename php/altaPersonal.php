@@ -1,21 +1,19 @@
 <?php
-// Iniciar sesión y manejar el control de acceso
+// Iniciar sesión y control de acceso
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
 
-$username = $_SESSION['username']; // Usuario actual autenticado
-
-// Inicialización de mensajes para la interfaz de usuario
+// Variables para almacenar mensajes de éxito y error
 $success_message = '';
 $error_message = '';
 
 // Proceso del formulario al recibir datos por POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // Incluir archivo de conexión centralizado a la BD
+    // Incluir archivo de conexión a la base de datos
     require_once 'conexion_BD.php';
 
     // Recuperar datos del formulario
@@ -25,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $clave = $_POST["clave"];  // Asumiendo que el formulario incluye un campo para 'clave'
     $estatus = $_POST["estatus"];  // Asumiendo que el formulario incluye un menú desplegable para 'estatus'
 
-    // Construcción y ejecución de la consulta SQL para inserción de datos
+    // Consulta SQL para inserción de datos
     $sql = "INSERT INTO Personal (Nombre, PuestoDepartamento, Observaciones, Clave, Estatus) 
             VALUES (?, ?, ?, ?, ?)";
 
