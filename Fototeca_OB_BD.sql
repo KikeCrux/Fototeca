@@ -45,7 +45,11 @@ CREATE TABLE DatosGenerales (
     FechaPrestamo DATE,
     Caracteristicas TEXT,
     Observaciones TEXT,
-    ImagenOficioVale BLOB -- BLOB para almacenar imágenes
+    ImagenOficioVale MEDIUMBLOB -- BLOB para almacenar imágenes
+    ImagenObra MEDIUMBLOB -- BLOB para almacenar imágenes
+    ID_Asignado fK de la tabla Personal y PK ID_Personal en la tabla Personal,
+    ID_Resguardante fK de la tabla Personaly PK ID_Personal en la tabla Personal,
+    TipoObra VARCHAR(30)
 );
 
 -- Desarrollador

@@ -122,7 +122,7 @@ $conn->close();
                         echo "<td>" . htmlspecialchars($row["FechaPrestamo"]) . "</td>";
                         echo "<td>" . htmlspecialchars($row["ClaveResguardante"]) . "</td>";
                         echo "<td>" . htmlspecialchars($row["ClaveAsignado"]) . "</td>";
-                        echo "<td><a href='baja-t3.php?id=" . $row["ID_DatosGenerales"] . "' class='btn btn-danger' onclick='return confirm(\"¿Está seguro de que desea eliminar este registro?\")'>Eliminar</a></td>";
+                        echo "<td><a href='bajaDatosGen.php?id=" . $row["ID_DatosGenerales"] . "' class='btn btn-danger' onclick='return confirm(\"¿Está seguro de que desea eliminar este registro?\")'>Eliminar</a></td>";
                         echo "</tr>";
                     }
                 } else {

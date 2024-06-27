@@ -95,9 +95,9 @@ $conn->close();
 
 <body>
     <?php include 'header.php'; ?>
+    <br>
+    <h1 class="text-center">Procesar Cambios de Personal</h1>
     <div class="container mt-5">
-        <h1 class="text-center">Procesar Cambios de Personal</h1>
-        <br>
         <?php if (!empty($error_message)) : ?>
             <div class="alert alert-danger text-center"><?php echo $error_message; ?></div>
         <?php endif; ?>

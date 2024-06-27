@@ -114,7 +114,7 @@ $conn->close();
                         echo "<td>" . $row["ID_Usuario"] . "</td>";
                         echo "<td>" . $row["Usuario"] . "</td>";
                         echo "<td>" . $row["TipoUsuario"] . "</td>";
-                        echo "<td><a href='baja-t4.php?id=" . $row["ID_Usuario"] . "' class='btn btn-danger'>Eliminar</a></td>";
+                        echo "<td><a href='bajaUsuarios.php?id=" . $row["ID_Usuario"] . "' class='btn btn-danger'>Eliminar</a></td>";
                         echo "</tr>";
                     }
                 } else {
