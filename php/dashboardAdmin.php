@@ -3,7 +3,7 @@
 session_start();
 if (!isset($_SESSION['username'])) {
     // Si no hay una sesión activa, redirige al usuario al formulario de inicio de sesión
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 // Almacena el nombre de usuario autenticado para su uso en el script

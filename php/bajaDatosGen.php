@@ -2,7 +2,7 @@
 // Inicia la sesión y verifica si el usuario está autenticado, redirigiendo al login si no lo está.
 session_start();
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -12,8 +12,10 @@ require_once 'conexion_BD.php';
 // Procesa la solicitud de eliminación si se ha proporcionado un ID válido.
 if (isset($_GET['id']) && !empty($_GET['id'])) {
     $id_DatosGenerales = $_GET['id'];
-    $sql = "DELETE FROM DatosGenerales WHERE ID_DatosGenerales = $id_DatosGenerales";
-    if ($conn->query($sql) === TRUE) {
+    $sql = "DELETE FROM DatosGenerales WHERE ID_DatosGenerales = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_DatosGenerales);
+    if ($stmt->execute()) {
         $success_message = "El registro se eliminó correctamente.";
     } else {
         $error_message = "Error al eliminar el registro: " . $conn->error;
@@ -21,19 +23,21 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 }
 
 $search = isset($_POST['search']) ? $_POST['search'] : '';
+$id_obra = isset($_POST['id_obra']) ? $_POST['id_obra'] : '';
 
-// Realiza una consulta para obtener los registros de la tabla DatosGenerales según el término de búsqueda
-if (!empty($search)) {
+// Realiza una consulta para obtener los registros de la tabla DatosGenerales según el término de búsqueda y el ID de obra
+if (!empty($search) || !empty($id_obra)) {
     $sql = "SELECT dg.ID_DatosGenerales, dg.Autores, dg.ObjetoObra, dg.Ubicacion, dg.NoInventario, dg.NoVale, 
             dg.FechaPrestamo, dg.Caracteristicas, dg.Observaciones, 
             p1.Clave as ClaveResguardante, p2.Clave as ClaveAsignado, p1.Nombre as NombreResguardante, p2.Nombre as NombreAsignado
             FROM DatosGenerales dg
             LEFT JOIN Personal p1 ON dg.ID_Resguardante = p1.ID_Personal
             LEFT JOIN Personal p2 ON dg.ID_Asignado = p2.ID_Personal
-            WHERE dg.Autores LIKE ? OR dg.ObjetoObra LIKE ? OR p1.Clave LIKE ? OR p2.Clave LIKE ?";
+            WHERE (dg.Autores LIKE ? OR dg.ObjetoObra LIKE ? OR p1.Clave LIKE ? OR p2.Clave LIKE ?)
+            AND (dg.ID_DatosGenerales = ? OR ? = '')";
     $stmt = $conn->prepare($sql);
     $searchTerm = "%" . $search . "%";
-    $stmt->bind_param("ssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+    $stmt->bind_param("ssssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm, $id_obra, $id_obra);
     $stmt->execute();
     $result = $stmt->get_result();
 } else {
@@ -85,6 +89,7 @@ $conn->close();
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="input-group mb-3">
                 <input type="text" name="search" class="form-control" placeholder="Buscar por autor, objeto/obra, clave resguardante o clave asignado" value="<?php echo htmlspecialchars($search); ?>">
+                <input type="text" name="id_obra" class="form-control" placeholder="Buscar por ID de obra" value="<?php echo htmlspecialchars($id_obra); ?>">
             </div>
             <button class="btn btn-primary" type="submit">Buscar</button>
         </form>

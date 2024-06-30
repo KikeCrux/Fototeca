@@ -1,8 +1,12 @@
 <?php
+
+// Establecer la zona horaria a Ciudad de México (CDMX)
+date_default_timezone_set('America/Mexico_City');
+
 session_start();
 
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -15,11 +19,8 @@ if (!isset($_GET['id'])) {
 
 $id_DatosGenerales = $_GET['id'];
 
-$sql = "SELECT * FROM DatosGenerales WHERE ID_DatosGenerales = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id_DatosGenerales);
-$stmt->execute();
-$result = $stmt->get_result();
+$sql = "SELECT * FROM DatosGenerales WHERE ID_DatosGenerales = $id_DatosGenerales";
+$result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
@@ -48,6 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $imagenContenido = '';
     $imagenObra = '';
+    $error_message = '';
 
     // Manejo de la imagen de oficio/vale
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
@@ -78,36 +80,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (!$error_message) {
-        if (!empty($imagenContenido) && !empty($imagenObra)) {
-            $sql = "UPDATE DatosGenerales SET Autores='$nuevos_autores', ObjetoObra='$nuevo_objeto', Ubicacion='$nueva_ubicacion', 
-                    NoInventario='$nuevo_inventario', NoVale='$nuevo_vale', FechaPrestamo='$nueva_fechprestamo', 
-                    Caracteristicas='$nuevas_caracteristicas', Observaciones='$nuevas_observaciones', TipoObra='$nuevo_tipo_obra', 
-                    ImagenOficioVale='$imagenContenido', ImagenObra='$imagenObra', ID_Resguardante=$nuevo_resguardante, 
-                    ID_Asignado=$nuevo_asignado WHERE ID_DatosGenerales=$id_DatosGenerales";
-        } elseif (!empty($imagenContenido)) {
-            $sql = "UPDATE DatosGenerales SET Autores='$nuevos_autores', ObjetoObra='$nuevo_objeto', Ubicacion='$nueva_ubicacion', 
-                    NoInventario='$nuevo_inventario', NoVale='$nuevo_vale', FechaPrestamo='$nueva_fechprestamo', 
-                    Caracteristicas='$nuevas_caracteristicas', Observaciones='$nuevas_observaciones', TipoObra='$nuevo_tipo_obra', 
-                    ImagenOficioVale='$imagenContenido', ID_Resguardante=$nuevo_resguardante, ID_Asignado=$nuevo_asignado 
-                    WHERE ID_DatosGenerales=$id_DatosGenerales";
-        } elseif (!empty($imagenObra)) {
-            $sql = "UPDATE DatosGenerales SET Autores='$nuevos_autores', ObjetoObra='$nuevo_objeto', Ubicacion='$nueva_ubicacion', 
-                    NoInventario='$nuevo_inventario', NoVale='$nuevo_vale', FechaPrestamo='$nueva_fechprestamo', 
-                    Caracteristicas='$nuevas_caracteristicas', Observaciones='$nuevas_observaciones', TipoObra='$nuevo_tipo_obra', 
-                    ImagenObra='$imagenObra', ID_Resguardante=$nuevo_resguardante, ID_Asignado=$nuevo_asignado 
-                    WHERE ID_DatosGenerales=$id_DatosGenerales";
-        } else {
-            $sql = "UPDATE DatosGenerales SET Autores='$nuevos_autores', ObjetoObra='$nuevo_objeto', Ubicacion='$nueva_ubicacion', 
-                    NoInventario='$nuevo_inventario', NoVale='$nuevo_vale', FechaPrestamo='$nueva_fechprestamo', 
-                    Caracteristicas='$nuevas_caracteristicas', Observaciones='$nuevas_observaciones', TipoObra='$nuevo_tipo_obra', 
-                    ID_Resguardante=$nuevo_resguardante, ID_Asignado=$nuevo_asignado WHERE ID_DatosGenerales=$id_DatosGenerales";
-        }
+        $conn->begin_transaction();
 
-        if ($conn->query($sql) === TRUE) {
-            header("Location: cambioDatosGen.php?success_message=Cambios realizados exitosamente.");
-            exit();
-        } else {
-            $error_message = "Error al realizar cambios: " . $conn->error;
+        try {
+            if (!empty($imagenContenido) && !empty($imagenObra)) {
+                $sql = "UPDATE DatosGenerales SET Autores='$nuevos_autores', ObjetoObra='$nuevo_objeto', Ubicacion='$nueva_ubicacion', 
+                        NoInventario='$nuevo_inventario', NoVale='$nuevo_vale', FechaPrestamo='$nueva_fechprestamo', 
+                        Caracteristicas='$nuevas_caracteristicas', Observaciones='$nuevas_observaciones', TipoObra='$nuevo_tipo_obra', 
+                        ImagenOficioVale='$imagenContenido', ImagenObra='$imagenObra', ID_Resguardante=$nuevo_resguardante, 
+                        ID_Asignado=$nuevo_asignado WHERE ID_DatosGenerales=$id_DatosGenerales";
+            } elseif (!empty($imagenContenido)) {
+                $sql = "UPDATE DatosGenerales SET Autores='$nuevos_autores', ObjetoObra='$nuevo_objeto', Ubicacion='$nueva_ubicacion', 
+                        NoInventario='$nuevo_inventario', NoVale='$nuevo_vale', FechaPrestamo='$nueva_fechprestamo', 
+                        Caracteristicas='$nuevas_caracteristicas', Observaciones='$nuevas_observaciones', TipoObra='$nuevo_tipo_obra', 
+                        ImagenOficioVale='$imagenContenido', ID_Resguardante=$nuevo_resguardante, ID_Asignado=$nuevo_asignado 
+                        WHERE ID_DatosGenerales=$id_DatosGenerales";
+            } elseif (!empty($imagenObra)) {
+                $sql = "UPDATE DatosGenerales SET Autores='$nuevos_autores', ObjetoObra='$nuevo_objeto', Ubicacion='$nueva_ubicacion', 
+                        NoInventario='$nuevo_inventario', NoVale='$nuevo_vale', FechaPrestamo='$nueva_fechprestamo', 
+                        Caracteristicas='$nuevas_caracteristicas', Observaciones='$nuevas_observaciones', TipoObra='$nuevo_tipo_obra', 
+                        ImagenObra='$imagenObra', ID_Resguardante=$nuevo_resguardante, ID_Asignado=$nuevo_asignado 
+                        WHERE ID_DatosGenerales=$id_DatosGenerales";
+            } else {
+                $sql = "UPDATE DatosGenerales SET Autores='$nuevos_autores', ObjetoObra='$nuevo_objeto', Ubicacion='$nueva_ubicacion', 
+                        NoInventario='$nuevo_inventario', NoVale='$nuevo_vale', FechaPrestamo='$nueva_fechprestamo', 
+                        Caracteristicas='$nuevas_caracteristicas', Observaciones='$nuevas_observaciones', TipoObra='$nuevo_tipo_obra', 
+                        ID_Resguardante=$nuevo_resguardante, ID_Asignado=$nuevo_asignado WHERE ID_DatosGenerales=$id_DatosGenerales";
+            }
+
+            if ($conn->query($sql) === TRUE) {
+                // Actualizar historial si hubo cambios en resguardante, asignado o ubicación
+                if ($row['ID_Resguardante'] != $nuevo_resguardante || $row['ID_Asignado'] != $nuevo_asignado || $row['Ubicacion'] != $nueva_ubicacion) {
+                    $fecha_actual = date('Y-m-d H:i:s');
+                    $sql_historial = "INSERT INTO HistorialCambiosDatosGenerales (ID_DatosGenerales, ID_ResguardanteAnterior, ID_AsignadoAnterior, UbicacionAnterior, FechaCambio) 
+                                      VALUES ($id_DatosGenerales, " . $row['ID_Resguardante'] . ", " . $row['ID_Asignado'] . ", '" . $row['Ubicacion'] . "', '$fecha_actual')";
+
+                    if ($conn->query($sql_historial) !== TRUE) {
+                        throw new Exception("Error al insertar en HistorialCambiosDatosGenerales: " . $conn->error);
+                    }
+                }
+
+                $conn->commit();
+                header("Location: cambioDatosGen.php?success_message=Cambios realizados exitosamente.");
+                exit();
+            } else {
+                throw new Exception("Error al realizar cambios: " . $conn->error);
+            }
+        } catch (Exception $e) {
+            $conn->rollback();
+            $error_message = $e->getMessage();
         }
     }
 
@@ -134,14 +155,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php
     $pageTitle = "Procesar Cambios";
     include 'header.php';
-    echo '<br>';
     ?>
 
     <div class="container mt-5">
         <h1 class="text-center">Procesar Cambios de Datos Generales</h1>
         <br>
         <?php if (!empty($error_message)) : ?>
-            <div class="alert alert-danger text-center"><?php echo $error_message; ?></div>
+            <div class="alert alert-danger text-center"><?php echo nl2br(htmlspecialchars($error_message)); ?></div>
         <?php endif; ?>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id=' . $id_DatosGenerales; ?>" method="post" enctype="multipart/form-data">
             <div class="form-group">
@@ -150,18 +170,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="form-group">
                 <label for="objeto">Nuevo objeto / obra:</label>
-                <input type="text" class="form-control" id="objeto" name="objeto" value="<?php echo htmlspecialchars($row['ObjetoObra']); ?>">
+                <input type="text" class="form-control" id="objeto" name="objeto" value="<?php echo htmlspecialchars($row['ObjetoObra']); ?>" required>
             </div>
             <div class="form-group">
-                <label for="ubicacion">Nueva ubicacion:</label>
+                <label for="ubicacion">Nueva ubicación:</label>
                 <input type="text" class="form-control" id="ubicacion" name="ubicacion" value="<?php echo htmlspecialchars($row['Ubicacion']); ?>" required>
             </div>
             <div class="form-group">
-                <label for="inventario">Nuevo inventario:</label>
+                <label for="inventario">Nuevo No Inventario:</label>
                 <input type="text" class="form-control" id="inventario" name="inventario" value="<?php echo htmlspecialchars($row['NoInventario']); ?>" required>
             </div>
             <div class="form-group">
-                <label for="vale">Nuevo No. Vale:</label>
+                <label for="vale">Nuevo No Vale:</label>
                 <input type="text" class="form-control" id="vale" name="vale" value="<?php echo htmlspecialchars($row['NoVale']); ?>" required>
             </div>
             <div class="form-group">
@@ -169,7 +189,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="date" class="form-control" id="fechprestamo" name="fechprestamo" value="<?php echo htmlspecialchars($row['FechaPrestamo']); ?>" required>
             </div>
             <div class="form-group">
-                <label for="caracteristicas">Nuevas caracteristicas:</label>
+                <label for="caracteristicas">Nuevas características:</label>
                 <textarea class="form-control" id="caracteristicas" name="caracteristicas" rows="3"><?php echo htmlspecialchars($row['Caracteristicas']); ?></textarea>
             </div>
             <div class="form-group">

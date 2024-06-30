@@ -21,6 +21,7 @@
                 <p><strong>Imagen de Obra:</strong> <?php echo $row['ImagenObra'] ? '<a href="verPDF.php?id=' . $row['ID_DatosGenerales'] . '&type=obra">Ver PDF</a>' : 'No disponible'; ?></p>
                 <p><strong>Clave Resguardante:</strong> <?php echo $row['ClaveResguardante'] . " - " . $row['NombreResguardante']; ?></p>
                 <p><strong>Clave Asignado:</strong> <?php echo $row['ClaveAsignado'] . " - " . $row['NombreAsignado']; ?></p>
+                <button type="button" class="btn btn-primary mt-3" onclick="location.href='verHistorial.php?id=<?php echo $row['ID_DatosGenerales']; ?>'">Ver Historial de Cambios</button>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>

@@ -88,6 +88,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="consultaDatosGen.php">Consultas</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="consultaHistorialDatosGen.php">Historial</a>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -107,6 +110,7 @@
             </div>
         </nav>
     </div>
+    <br>
 </body>
 
 </html>

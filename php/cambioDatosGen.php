@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -15,38 +15,40 @@ function limpiar_entrada($entrada)
     return htmlspecialchars(strip_tags($entrada));
 }
 
-// Obtener el término de búsqueda si se envió
+// Obtener los términos de búsqueda si se enviaron
 $search = isset($_POST['search']) ? limpiar_entrada($_POST['search']) : '';
+$id_obra = isset($_POST['id_obra']) ? limpiar_entrada($_POST['id_obra']) : '';
 
-// Preparar y ejecutar la consulta de búsqueda si se ha proporcionado un término de búsqueda
-if (!empty($search)) {
+// Preparar y ejecutar la consulta de búsqueda según los términos proporcionados
+if (!empty($search) || !empty($id_obra)) {
+    // Consulta principal que incluye la búsqueda por término general y por ID de obra si se proporcionó
     $sql = "SELECT dg.ID_DatosGenerales, dg.Autores, dg.ObjetoObra, dg.Ubicacion, dg.NoInventario, dg.NoVale, 
             dg.FechaPrestamo, dg.Caracteristicas, dg.Observaciones, dg.ImagenOficioVale, dg.ImagenObra, dg.TipoObra,
             p1.Clave as ClaveResguardante, p2.Clave as ClaveAsignado, p1.Nombre as NombreResguardante, p2.Nombre as NombreAsignado
             FROM DatosGenerales dg
             LEFT JOIN Personal p1 ON dg.ID_Resguardante = p1.ID_Personal
             LEFT JOIN Personal p2 ON dg.ID_Asignado = p2.ID_Personal
-            WHERE dg.Autores LIKE ? OR dg.ObjetoObra LIKE ? OR p1.Clave LIKE ? OR p2.Clave LIKE ?";
-    $stmt = $conn->prepare($sql);
+            WHERE (dg.Autores LIKE ? OR dg.ObjetoObra LIKE ? OR p1.Clave LIKE ? OR p2.Clave LIKE ?)
+            AND (dg.ID_DatosGenerales = ? OR ? = '')
+            ORDER BY dg.ObjetoObra";
+
     $searchTerm = "%" . $search . "%";
-    $stmt->bind_param("ssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+    $id_obra = intval($id_obra); // Asegurarse de que $id_obra sea un número entero
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssssii", $searchTerm, $searchTerm, $searchTerm, $searchTerm, $id_obra, $id_obra);
     $stmt->execute();
     $result = $stmt->get_result();
 } else {
+    // Consulta sin términos de búsqueda
     $sql = "SELECT dg.ID_DatosGenerales, dg.Autores, dg.ObjetoObra, dg.Ubicacion, dg.NoInventario, dg.NoVale, 
             dg.FechaPrestamo, dg.Caracteristicas, dg.Observaciones, dg.ImagenOficioVale, dg.ImagenObra, dg.TipoObra,
             p1.Clave as ClaveResguardante, p2.Clave as ClaveAsignado, p1.Nombre as NombreResguardante, p2.Nombre as NombreAsignado
             FROM DatosGenerales dg
             LEFT JOIN Personal p1 ON dg.ID_Resguardante = p1.ID_Personal
-            LEFT JOIN Personal p2 ON dg.ID_Asignado = p2.ID_Personal";
+            LEFT JOIN Personal p2 ON dg.ID_Asignado = p2.ID_Personal
+            ORDER BY dg.ObjetoObra";
     $result = $conn->query($sql);
-}
-
-// Función para redirigir al script de cambios
-function redirigir_a_cambios($id)
-{
-    header("Location: procesarCambiosDatosGen.php?id=" . $id);
-    exit();
 }
 
 $conn->close();
@@ -73,6 +75,7 @@ $conn->close();
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="input-group mb-3">
                 <input type="text" name="search" class="form-control" placeholder="Buscar por autor, objeto/obra, clave resguardante o clave asignado" value="<?php echo htmlspecialchars($search); ?>">
+                <input type="text" name="id_obra" class="form-control" placeholder="ID de obra" value="<?php echo htmlspecialchars($id_obra); ?>">
             </div>
             <button class="btn btn-primary" type="submit">Buscar</button>
         </form>

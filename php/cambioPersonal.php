@@ -3,7 +3,7 @@ session_start();
 
 // Verificar autenticidad del usuario
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 

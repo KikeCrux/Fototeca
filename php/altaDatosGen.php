@@ -9,7 +9,7 @@ session_start();
 
 // Redirige a la página de inicio de sesión si no hay sesión activa
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 
