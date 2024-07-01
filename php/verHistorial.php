@@ -32,11 +32,12 @@ if ($result_datos_generales->num_rows > 0) {
 }
 
 // Obtener historial de cambios
-$sql_historial = "SELECT h.ID_Historial, p1.Clave AS ClaveResguardanteAnterior, p1.Nombre AS NombreResguardanteAnterior, p2.Clave AS ClaveAsignadoAnterior, p2.Nombre AS NombreAsignadoAnterior, 
+$sql_historial = "SELECT h.ID_Historial, dg.NoVale AS NoValeAnterior, p1.Clave AS ClaveResguardanteAnterior, p1.Nombre AS NombreResguardanteAnterior, p2.Clave AS ClaveAsignadoAnterior, p2.Nombre AS NombreAsignadoAnterior, 
                         h.UbicacionAnterior, DATE_FORMAT(h.FechaCambio, '%d-%m-%Y') AS FechaCambioFormato
                  FROM HistorialCambiosDatosGenerales h
                  LEFT JOIN Personal p1 ON h.ID_ResguardanteAnterior = p1.ID_Personal
                  LEFT JOIN Personal p2 ON h.ID_AsignadoAnterior = p2.ID_Personal
+                 LEFT JOIN datosgenerales dg ON h.ID_DatosGenerales = dg.ID_DatosGenerales
                  WHERE h.ID_DatosGenerales = $id_DatosGenerales
                  ORDER BY h.FechaCambio DESC";
 
@@ -74,6 +75,7 @@ $conn->close();
             <p><strong>Resguardante Actual:</strong> <?php echo $row_datos_generales['ClaveResguardanteActual'] . " - " . $row_datos_generales['NombreResguardanteActual']; ?></p>
             <p><strong>Asignado Actual:</strong> <?php echo $row_datos_generales['ClaveAsignadoActual'] . " - " . $row_datos_generales['NombreAsignadoActual']; ?></p>
             <p><strong>Ubicación Actual:</strong> <?php echo htmlspecialchars($row_datos_generales['Ubicacion']); ?></p>
+            <p><strong>No. Vale:</strong> <?php echo htmlspecialchars($row_datos_generales['NoVale']); ?></p>
             <p><strong>Fecha de Préstamo:</strong> <?php echo $row_datos_generales['FechaPrestamo'] ? date("d-m-Y", strtotime($row_datos_generales['FechaPrestamo'])) : 'N/A'; ?></p>
         </div>
 
@@ -89,6 +91,7 @@ $conn->close();
                                 <th>Resguardante Anterior</th>
                                 <th>Asignado Anterior</th>
                                 <th>Ubicación Anterior</th>
+                                <th>No. Vale Anterior</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -98,6 +101,7 @@ $conn->close();
                                     <td><?php echo $row_historial['ClaveResguardanteAnterior'] . " - " . $row_historial['NombreResguardanteAnterior']; ?></td>
                                     <td><?php echo $row_historial['ClaveAsignadoAnterior'] . " - " . $row_historial['NombreAsignadoAnterior']; ?></td>
                                     <td><?php echo htmlspecialchars($row_historial['UbicacionAnterior']); ?></td>
+                                    <td><?php echo htmlspecialchars($row_historial['NoValeAnterior']); ?></td>
                                 </tr>
                             <?php endwhile; ?>
                         </tbody>
