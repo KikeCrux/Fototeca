@@ -36,7 +36,7 @@ $sql_historial = "SELECT dg.ID_DatosGenerales AS ID_Obra, dg.ObjetoObra AS Obra_
                          p2.ID_Personal AS ID_AsignadoAnterior, p2.Nombre AS NombreAsignadoAnterior, 
                          h.UbicacionAnterior
                   FROM HistorialCambiosDatosGenerales h
-                  JOIN datosgenerales dg ON h.ID_DatosGenerales = dg.ID_DatosGenerales
+                  JOIN DatosGenerales dg ON h.ID_DatosGenerales = dg.ID_DatosGenerales
                   LEFT JOIN Personal p1 ON h.ID_ResguardanteAnterior = p1.ID_Personal
                   LEFT JOIN Personal p2 ON h.ID_AsignadoAnterior = p2.ID_Personal
                   WHERE ('$searchID' = '' OR dg.ID_DatosGenerales = '$searchID')

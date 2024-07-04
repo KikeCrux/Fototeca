@@ -17,9 +17,9 @@ $id_DatosGenerales = $_GET['id'];
 
 // Obtener detalles de los datos generales (incluyendo resguardante actual, asignado actual y ubicación actual)
 $sql_datos_generales = "SELECT dg.*, p1.Clave AS ClaveResguardanteActual, p1.Nombre AS NombreResguardanteActual, p2.Clave AS ClaveAsignadoActual, p2.Nombre AS NombreAsignadoActual
-                        FROM datosgenerales dg
-                        LEFT JOIN personal p1 ON dg.ID_Resguardante = p1.ID_Personal
-                        LEFT JOIN personal p2 ON dg.ID_Asignado = p2.ID_Personal
+                        FROM DatosGenerales dg
+                        LEFT JOIN Personal p1 ON dg.ID_Resguardante = p1.ID_Personal
+                        LEFT JOIN Personal p2 ON dg.ID_Asignado = p2.ID_Personal
                         WHERE dg.ID_DatosGenerales = $id_DatosGenerales";
 
 $result_datos_generales = $conn->query($sql_datos_generales);
@@ -37,7 +37,7 @@ $sql_historial = "SELECT h.ID_Historial, dg.NoVale AS NoValeAnterior, p1.Clave A
                  FROM HistorialCambiosDatosGenerales h
                  LEFT JOIN Personal p1 ON h.ID_ResguardanteAnterior = p1.ID_Personal
                  LEFT JOIN Personal p2 ON h.ID_AsignadoAnterior = p2.ID_Personal
-                 LEFT JOIN datosgenerales dg ON h.ID_DatosGenerales = dg.ID_DatosGenerales
+                 LEFT JOIN DatosGenerales dg ON h.ID_DatosGenerales = dg.ID_DatosGenerales
                  WHERE h.ID_DatosGenerales = $id_DatosGenerales
                  ORDER BY h.FechaCambio DESC";
 

@@ -19,22 +19,26 @@ $search = isset($_POST['search']) ? $_POST['search'] : '';
 if (isset($_GET['id']) && !empty($_GET['id'])) {
     $id_usuario = $_GET['id'];
 
-    // Intenta eliminar primero registros dependientes en 'userlogs' para evitar errores de clave foránea
     $conn->autocommit(FALSE); // Desactiva el autocommit para manejar la transacción manualmente
+
     try {
-        $sql = "DELETE FROM userlogs WHERE ID_Usuario = ?";
+        // Intenta eliminar primero registros dependientes en 'userlogs' para evitar errores de clave foránea
+        $sql = "DELETE FROM UserLogs WHERE ID_Usuario = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id_usuario);
         $stmt->execute();
+        $stmt->close();
 
+        // Eliminar el usuario
         $sql = "DELETE FROM Usuarios WHERE ID_Usuario = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id_usuario);
         $stmt->execute();
+        $stmt->close();
 
         $conn->commit(); // Confirma todas las operaciones de la transacción
         $success_message = "El usuario se eliminó correctamente.";
-    } catch (mysqli_sql_exception $e) {
+    } catch (Exception $e) {
         $conn->rollback(); // Revierte la transacción en caso de error
         $error_message = "Error al eliminar el usuario: " . $e->getMessage();
     }
@@ -49,6 +53,7 @@ if (!empty($search)) {
     $stmt->bind_param("ss", $searchTerm, $searchTerm);
     $stmt->execute();
     $result = $stmt->get_result();
+    $stmt->close();
 } else {
     // Consulta para obtener la lista de usuarios si no hay búsqueda.
     $sql = "SELECT ID_Usuario, Usuario, TipoUsuario FROM Usuarios";

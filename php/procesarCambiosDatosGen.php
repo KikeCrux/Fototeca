@@ -121,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
 
                 $conn->commit();
-                header("Location: cambioDatosGen.php?success_message=Cambios realizados exitosamente.");
+                header("Location: cambioDatosGen.php?success_message=Cambios-realizados-exitosamente.");
                 exit();
             } else {
                 throw new Exception("Error al realizar cambios: " . $conn->error);
