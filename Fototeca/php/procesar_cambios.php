@@ -1,184 +1,160 @@
 <?php
 session_start();
 
-// Verificar si el usuario está autenticado
-if (!isset($_SESSION['username'])) {
-    // Si no está autenticado, redirigirlo a la página de inicio de sesión
-    header("Location: login.php");
-    exit();
-}
-
+// Realizar la conexión a la base de datos
 $servername = "localhost";
-$username = "root";
-$password = "Sandia2016.!";
-$dbname = "fototeca_uaa";
+$db_username = "root";
+$db_password = "Sandia2016.!";
+$dbname = "Fototeca_uaa";
 
-// Crear conexión a la base de datos
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Verificar la conexión
+$conn = new mysqli($servername, $db_username, $db_password, $dbname);
 if ($conn->connect_error) {
     die("Error de conexión: " . $conn->connect_error);
 }
 
-// Verificar si se recibió el ID del registro a cambiar
-if (!isset($_GET['id'])) {
-    header("Location: cambios.php");
-    exit();
-}
+$id_DatosGenerales = $_GET['id'];
 
-$ID_Tecnica = $_GET['id'];
-
-// Consulta unificada para obtener los datos del registro específico
-$sql = "SELECT ST.ID_Tecnica, ST.NumeroInventario, ST.ClaveTecnica, 
-               ST.ProcesoFotografico, ST.FondoColeccion, ST.Formato, ST.NumeroNegativoCopia,
-               ST.Tipo,
-               C.ID_Cultural,
-               D.ID_Datacion, D.FechaAsunto, D.FechaToma,
-               UG.ID_Ubicacion, UG.LugarAsunto, UG.LugarToma,
-               E.ID_Epoca, E.Epoca,
-               A.ID_Autoria, A.Autor, A.AutorPrimigenio, A.AgenciaEstudio, A.EditorColeccionista, A.Lema,
-               I.ID_Indicativo, I.Sello, I.Cuño, I.Firma, I.Etiqueta, I.Imprenta, I.Otro,
-               DN.ID_Denominacion, DN.TituloOrigen, DN.TituloCatalografico, DN.TituloSerie,
-               DS.ID_Descriptores, DS.TemaPrincipal, DS.Descriptores,
-               P.ID_Protagonistas, P.Personajes,
-               O.ID_Observaciones, O.InscripcionOriginal, O.Conjunto, O.Anotaciones, O.NumerosInterseccion, O.DocumentacionAsociada
-        FROM SeccionTecnica ST
-        LEFT JOIN Clave C ON ST.ID_Tecnica = C.ID_Tecnica
-        LEFT JOIN Datacion D ON ST.ID_Tecnica = D.ID_Tecnica
-        LEFT JOIN UbicacionGeografica UG ON ST.ID_Tecnica = UG.ID_Tecnica
-        LEFT JOIN Epocario E ON ST.ID_Tecnica = E.ID_Tecnica
-        LEFT JOIN Autoria A ON ST.ID_Tecnica = A.ID_Tecnica
-        LEFT JOIN Indicativo I ON A.ID_Autoria = I.ID_Autoria
-        LEFT JOIN Denominacion DN ON ST.ID_Tecnica = DN.ID_Tecnica
-        LEFT JOIN Descriptores DS ON ST.ID_Tecnica = DS.ID_Tecnica
-        LEFT JOIN Protagonistas P ON ST.ID_Tecnica = P.ID_Tecnica
-        LEFT JOIN Observaciones O ON ST.ID_Tecnica = O.ID_Tecnica
-        WHERE ST.ID_Tecnica = ?";
+// Obtener la información actual del registro a modificar
+$sql = "SELECT * FROM Fototeca WHERE ID_Tecnica = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $ID_Tecnica);
+$stmt->bind_param("i", $id_DatosGenerales);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Verificar si se encontró el registro
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-} else {
-    header("Location: cambios.php");
+if ($result->num_rows === 0) {
+    echo "No se encontró ningún registro con el ID proporcionado.";
     exit();
 }
 
-// Si se envió el formulario de cambios
+$row = $result->fetch_assoc();
+
+// Procesar el formulario de cambios
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Recolectar datos del formulario
-    $nuevo_NumeroInventario = $_POST["NumeroInventario"];
-    $nuevo_ClaveTecnica = $_POST["ClaveTecnica"];
-    $nuevo_ProcesoFotografico = $_POST["ProcesoFotografico"];
-    $nuevo_FondoColeccion = $_POST["FondoColeccion"];
-    $nuevo_Formato = $_POST["Formato"];
-    $nuevo_NumeroNegativoCopia = $_POST["NumeroNegativoCopia"];
-    $nuevo_Tipo = $_POST["Tipo"];
+    // Limpiar y validar los datos recibidos del formulario (puedes implementar una función limpiar_entrada si es necesario)
+    $nuevo_numero_inventario = $_POST['NumeroInventario'];
+    $nueva_clave_tecnica = $_POST['ClaveTecnica'];
+    $nuevo_proceso_fotografico = $_POST['ProcesoFotografico'];
+    $nuevo_fondo_coleccion = $_POST['FondoColeccion'];
+    $nuevo_formato = $_POST['Formato'];
+    $nuevo_numero_negativo = $_POST['NumeroNegativoCopia'];
+    $nuevo_tipo = $_POST['Tipo'];
+    $nuevo_fecha_asunto = $_POST['FechaAsunto'];
+    $nuevo_fecha_toma = $_POST['FechaToma'];
+    $nuevo_lugar_asunto = $_POST['LugarAsunto'];
+    $nuevo_lugar_toma = $_POST['LugarToma'];
+    $nuevo_epoca = $_POST['Epoca'];
+    $nuevo_autor = $_POST['Autor'];
+    $nuevo_autor_primigenio = $_POST['AutorPrimigenio'];
+    $nuevo_agencia_estudio = $_POST['AgenciaEstudio'];
+    $nuevo_editor_coleccionista = $_POST['EditorColeccionista'];
+    $nuevo_lema = $_POST['Lema'];
+    $nuevo_sello = $_POST['Sello'];
+    $nuevo_cuño = $_POST['Cuño'];
+    $nuevo_firma = $_POST['Firma'];
+    $nuevo_etiqueta = $_POST['Etiqueta'];
+    $nuevo_imprenta = $_POST['Imprenta'];
+    $nuevo_otro = $_POST['Otro'];
+    $nuevo_titulo_origen = $_POST['TituloOrigen'];
+    $nuevo_titulo_catalografico = $_POST['TituloCatalografico'];
+    $nuevo_titulo_serie = $_POST['TituloSerie'];
+    $nuevo_tema_principal = $_POST['TemaPrincipal'];
+    $nuevo_descriptores = $_POST['Descriptores'];
+    $nuevo_personajes = $_POST['Personajes'];
+    $nuevo_inscripcion_original = $_POST['InscripcionOriginal'];
+    $nuevo_conjunto = $_POST['Conjunto'];
+    $nuevo_anotaciones = $_POST['Anotaciones'];
+    $nuevo_numeros_interseccion = $_POST['NumerosInterseccion'];
+    $nuevo_documentacion_asociada = $_POST['DocumentacionAsociada'];
 
-    $nuevo_ID_Cultural = $_POST["ID_Cultural"];
-    $nuevo_ID_Datacion = $_POST["ID_Datacion"];
-    $nuevo_FechaAsunto = $_POST["FechaAsunto"];
-    $nuevo_FechaToma = $_POST["FechaToma"];
-    $nuevo_ID_Ubicacion = $_POST["ID_Ubicacion"];
-    $nuevo_LugarAsunto = $_POST["LugarAsunto"];
-    $nuevo_LugarToma = $_POST["LugarToma"];
-    $nuevo_ID_Epoca = $_POST["ID_Epoca"];
-    $nuevo_Epoca = $_POST["Epoca"];
-    $nuevo_ID_Autoria = $_POST["ID_Autoria"];
-    $nuevo_Autor = $_POST["Autor"];
-    $nuevo_AutorPrimigenio = $_POST["AutorPrimigenio"];
-    $nuevo_AgenciaEstudio = $_POST["AgenciaEstudio"];
-    $nuevo_EditorColeccionista = $_POST["EditorColeccionista"];
-    $nuevo_Lema = $_POST["Lema"];
-    $nuevo_ID_Indicativo = $_POST["ID_Indicativo"];
-    $nuevo_Sello = $_POST["Sello"];
-    $nuevo_Cuño = $_POST["Cuño"];
-    $nuevo_Firma = $_POST["Firma"];
-    $nuevo_Etiqueta = $_POST["Etiqueta"];
-    $nuevo_Imprenta = $_POST["Imprenta"];
-    $nuevo_Otro = $_POST["Otro"];
-    $nuevo_ID_Denominacion = $_POST["ID_Denominacion"];
-    $nuevo_TituloOrigen = $_POST["TituloOrigen"];
-    $nuevo_TituloCatalografico = $_POST["TituloCatalografico"];
-    $nuevo_TituloSerie = $_POST["TituloSerie"];
-    $nuevo_ID_Descriptores = $_POST["ID_Descriptores"];
-    $nuevo_TemaPrincipal = $_POST["TemaPrincipal"];
-    $nuevo_Descriptores = $_POST["Descriptores"];
-    $nuevo_ID_Protagonistas = $_POST["ID_Protagonistas"];
-    $nuevo_Personajes = $_POST["Personajes"];
-    $nuevo_ID_Observaciones = $_POST["ID_Observaciones"];
-    $nuevo_InscripcionOriginal = $_POST["InscripcionOriginal"];
-    $nuevo_Conjunto = $_POST["Conjunto"];
-    $nuevo_Anotaciones = $_POST["Anotaciones"];
-    $nuevo_NumerosInterseccion = $_POST["NumerosInterseccion"];
-    $nuevo_DocumentacionAsociada = $_POST["DocumentacionAsociada"];
+    // Actualizar el registro en la tabla Fototeca
+    $sql_update = "UPDATE Fototeca SET 
+                    NumeroInventario = ?, 
+                    ClaveTecnica = ?, 
+                    ProcesoFotografico = ?, 
+                    FondoColeccion = ?, 
+                    Formato = ?, 
+                    NumeroNegativoCopia = ?, 
+                    Tipo = ?, 
+                    FechaAsunto = ?, 
+                    FechaToma = ?, 
+                    LugarAsunto = ?, 
+                    LugarToma = ?, 
+                    Epoca = ?, 
+                    Autor = ?, 
+                    AutorPrimigenio = ?, 
+                    AgenciaEstudio = ?, 
+                    EditorColeccionista = ?, 
+                    Lema = ?, 
+                    Sello = ?, 
+                    Cuño = ?, 
+                    Firma = ?, 
+                    Etiqueta = ?, 
+                    Imprenta = ?, 
+                    Otro = ?, 
+                    TituloOrigen = ?, 
+                    TituloCatalografico = ?, 
+                    TituloSerie = ?, 
+                    TemaPrincipal = ?, 
+                    Descriptores = ?, 
+                    Personajes = ?, 
+                    InscripcionOriginal = ?, 
+                    Conjunto = ?, 
+                    Anotaciones = ?, 
+                    NumerosInterseccion = ?, 
+                    DocumentacionAsociada = ?
+                    WHERE ID_Tecnica = ?";
+    $stmt_update = $conn->prepare($sql_update);
+    $stmt_update->bind_param(
+        "ssssssssssssssssssssssssssssssssssi",
+        $nuevo_numero_inventario,
+        $nueva_clave_tecnica,
+        $nuevo_proceso_fotografico,
+        $nuevo_fondo_coleccion,
+        $nuevo_formato,
+        $nuevo_numero_negativo,
+        $nuevo_tipo,
+        $nuevo_fecha_asunto,
+        $nuevo_fecha_toma,
+        $nuevo_lugar_asunto,
+        $nuevo_lugar_toma,
+        $nuevo_epoca,
+        $nuevo_autor,
+        $nuevo_autor_primigenio,
+        $nuevo_agencia_estudio,
+        $nuevo_editor_coleccionista,
+        $nuevo_lema,
+        $nuevo_sello,
+        $nuevo_cuño,
+        $nuevo_firma,
+        $nuevo_etiqueta,
+        $nuevo_imprenta,
+        $nuevo_otro,
+        $nuevo_titulo_origen,
+        $nuevo_titulo_catalografico,
+        $nuevo_titulo_serie,
+        $nuevo_tema_principal,
+        $nuevo_descriptores,
+        $nuevo_personajes,
+        $nuevo_inscripcion_original,
+        $nuevo_conjunto,
+        $nuevo_anotaciones,
+        $nuevo_numeros_interseccion,
+        $nuevo_documentacion_asociada,
+        $id_DatosGenerales
+    );
 
-    // Actualizar los datos en la base de datos
-    $sql = "UPDATE SeccionTecnica SET NumeroInventario=?, ClaveTecnica=?, ProcesoFotografico=?, FondoColeccion=?, Formato=?, NumeroNegativoCopia=?, Tipo=? WHERE ID_Tecnica=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssssssi", $nuevo_NumeroInventario, $nuevo_ClaveTecnica, $nuevo_ProcesoFotografico, $nuevo_FondoColeccion, $nuevo_Formato, $nuevo_NumeroNegativoCopia, $nuevo_Tipo, $ID_Tecnica);
-    $stmt->execute();
-
-    $sql = "UPDATE Clave SET ID_Cultural=? WHERE ID_Tecnica=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ii", $nuevo_ID_Cultural, $ID_Tecnica);
-    $stmt->execute();
-
-    $sql = "UPDATE Datacion SET FechaAsunto=?, FechaToma=? WHERE ID_Tecnica=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssi", $nuevo_FechaAsunto, $nuevo_FechaToma, $ID_Tecnica);
-    $stmt->execute();
-
-    $sql = "UPDATE UbicacionGeografica SET LugarAsunto=?, LugarToma=? WHERE ID_Tecnica=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssi", $nuevo_LugarAsunto, $nuevo_LugarToma, $ID_Tecnica);
-    $stmt->execute();
-
-    $sql = "UPDATE Epocario SET Epoca=? WHERE ID_Tecnica=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("si", $nuevo_Epoca, $ID_Tecnica);
-    $stmt->execute();
-
-    $sql = "UPDATE Autoria SET Autor=?, AutorPrimigenio=?, AgenciaEstudio=?, EditorColeccionista=?, Lema=? WHERE ID_Tecnica=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssssi", $nuevo_Autor, $nuevo_AutorPrimigenio, $nuevo_AgenciaEstudio, $nuevo_EditorColeccionista, $nuevo_Lema, $ID_Tecnica);
-    $stmt->execute();
-
-    $sql = "UPDATE Indicativo SET Sello=?, Cuño=?, Firma=?, Etiqueta=?, Imprenta=?, Otro=? WHERE ID_Autoria=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssssi", $nuevo_Sello, $nuevo_Cuño, $nuevo_Firma, $nuevo_Etiqueta, $nuevo_Imprenta, $nuevo_Otro, $row['ID_Autoria']);
-    $stmt->execute();
-
-    $sql = "UPDATE Denominacion SET TituloOrigen=?, TituloCatalografico=?, TituloSerie=? WHERE ID_Tecnica=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssi", $nuevo_TituloOrigen, $nuevo_TituloCatalografico, $nuevo_TituloSerie, $ID_Tecnica);
-    $stmt->execute();
-
-    $sql = "UPDATE Descriptores SET TemaPrincipal=?, Descriptores=? WHERE ID_Tecnica=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssi", $nuevo_TemaPrincipal, $nuevo_Descriptores, $ID_Tecnica);
-    $stmt->execute();
-
-    $sql = "UPDATE Protagonistas SET Personajes=? WHERE ID_Tecnica=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("si", $nuevo_Personajes, $ID_Tecnica);
-    $stmt->execute();
-
-    $sql = "UPDATE Observaciones SET InscripcionOriginal=?, Conjunto=?, Anotaciones=?, NumerosInterseccion=?, DocumentacionAsociada=? WHERE ID_Tecnica=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssssi", $nuevo_InscripcionOriginal, $nuevo_Conjunto, $nuevo_Anotaciones, $nuevo_NumerosInterseccion, $nuevo_DocumentacionAsociada, $ID_Tecnica);
-    $stmt->execute();
-
-    header("Location: cambio-t3.php?success_message=Cambios realizados exitosamente.");
-    exit();
+    if ($stmt_update->execute()) {
+        header("Location: cambios.php?success=true");
+        exit();
+    } else {
+        echo "Error al actualizar el registro: " . $stmt_update->error;
+    }
 }
 
+// Cerrar conexión
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -200,10 +176,7 @@ $conn->close();
     <div class="container mt-5">
         <h1 class="text-center">Procesar Cambios de Datos Generales</h1>
         <br>
-        <?php if (!empty($error_message)) : ?>
-            <div class="alert alert-danger text-center"><?php echo $error_message; ?></div>
-        <?php endif; ?>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id=' . $ID_Tecnica; ?>" method="post" enctype="multipart/form-data">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id=' . $id_DatosGenerales; ?>" method="post" enctype="multipart/form-data">
             <!-- Formulario actualizado con los nuevos campos -->
             <div class="form-group">
                 <label for="NumeroInventario">Número Inventario:</label>
@@ -234,10 +207,6 @@ $conn->close();
                 <input type="text" class="form-control" id="Tipo" name="Tipo" value="<?php echo htmlspecialchars($row['Tipo']); ?>">
             </div>
             <!-- Campos adicionales para las tablas relacionadas -->
-            <div class="form-group">
-                <label for="ID_Cultural">ID Cultural:</label>
-                <input type="text" class="form-control" id="ID_Cultural" name="ID_Cultural" value="<?php echo htmlspecialchars($row['ID_Cultural']); ?>">
-            </div>
             <div class="form-group">
                 <label for="FechaAsunto">Fecha Asunto:</label>
                 <input type="date" class="form-control" id="FechaAsunto" name="FechaAsunto" value="<?php echo htmlspecialchars($row['FechaAsunto']); ?>">

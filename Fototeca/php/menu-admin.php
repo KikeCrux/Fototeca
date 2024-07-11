@@ -46,7 +46,7 @@
         <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
             <ul class="navbar-nav text-center">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Altas</a>
+                    <a class="nav-link" href="altas.php">Altas</a>
                 </li>
             </ul>
             <ul class="navbar-nav text-center">
@@ -56,7 +56,7 @@
             </ul>
             <ul class="navbar-nav text-center">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Cambios</a>
+                    <a class="nav-link" href="cambios.php">Cambios</a>
                 </li>
             </ul>
             <ul class="navbar-nav text-center">

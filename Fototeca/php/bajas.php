@@ -74,10 +74,6 @@ $conn->close();
         <?php if (!empty($error_message)) : ?>
             <div id="errorAlert" class="alert alert-danger text-center"><?php echo $error_message; ?></div>
         <?php endif; ?>
-
-        <div class="container-back">
-            <button onclick="goBack()" class="btn btn-secondary mt-3">Regresar</button>
-        </div>
         <?php include 'header.php'; ?>
         <div class="container mt-4">
 

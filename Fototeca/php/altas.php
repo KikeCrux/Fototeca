@@ -11,6 +11,8 @@ if (!isset($_SESSION['username'])) {
 $success_message = '';
 $error_message = '';
 
+$imagenObra = '';
+
 // Procesar el formulario si se envió
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Conectar a la base de datos
@@ -58,7 +60,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $Conjunto = $_POST["Conjunto"];
     $Anotaciones = $_POST["Anotaciones"];
     $NInterseccion = $_POST["NInterseccion"];
-    $DocAsociada = $_POST["DocAsociada"];
+
+
+    // Manejo de la imagen de oficio/vale
+    if (isset($_FILES['DocAsociada']) && $_FILES['DocAsociada']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['DocAsociada']['tmp_name'];
+        $fileType = $_FILES['DocAsociada']['type'];
+        $fileSize = $_FILES['DocAsociada']['size'];
+
+        if ($fileType == 'application/pdf' && $fileSize <= 10000000) { // 10 MB limit
+            $imagenContenido = file_get_contents($fileTmpPath);
+            $imagenContenido = $conn->real_escape_string($imagenContenido);
+        } else {
+            $error_message = "Archivo de oficio/vale no válido. Asegúrese de que es un PDF y no supera los 10 MB.";
+        }
+    }
 
     // Preparar la consulta SQL
     $sql = "INSERT INTO Fototeca (NumeroInventario, ClaveTecnica, ProcesoFotografico, FondoColeccion, Formato, NumeroNegativoCopia, Tipo,
@@ -72,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     '$Autor', '$Autor_Primi', '$Agencia', '$Editor', '$Lema', 
                     '$Sello', '$Cuno', '$Firma', '$Etiqueta', '$Imprenta', '$Otro', 
                     '$TitOrigen', '$TitCatalo', '$TitSerie', '$TemaPrin', '$Descriptores', 
-                    '$Personajes', '$InscripOriginal', '$Conjunto', '$Anotaciones', '$NInterseccion', '$DocAsociada')";
+                    '$Personajes', '$InscripOriginal', '$Conjunto', '$Anotaciones', '$NInterseccion', '$imagenContenido')";
 
     // Ejecutar la consulta SQL
     if ($conn->query($sql) === TRUE) {
@@ -86,6 +102,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Cerrar la conexión a la base de datos
     $conn->close();
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -235,6 +253,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <textarea class="form-control" name="NInterseccion" id="NInterseccion" cols="30" rows="5"></textarea><br>
                 <label for="DocAsociada">Documentación Asociada:</label>
                 <textarea class="form-control" name="DocAsociada" id="DocAsociada" cols="30" rows="5"></textarea><br>
+                <div class="form-group">
+                    <label for="DocAsociada">Imagen de la obra (PDF)</label>
+                    <input type="file" class="form-control" id="DocAsociada" name="DocAsociada">
+                </div>
             </div>
 
             <div class="container-btn"> <button type="submit" class="btnEnviar">Guardar</button> </div>
