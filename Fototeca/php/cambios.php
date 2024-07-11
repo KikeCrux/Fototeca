@@ -3,12 +3,12 @@ session_start();
 
 // Realizar la conexión a la base de datos
 $servername = "localhost";
-$db_username = "root";
-$db_password = "Sandia2016.!";
+$username = "root";
+$password = "Trompudo117";
 $dbname = "Fototeca_uaa";
 
 
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
+$conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Error de conexión: " . $conn->connect_error);
 }

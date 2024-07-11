@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Conectar a la base de datos
     $servername = "localhost";
     $username = "root";
-    $password = "Sandia2016.!";
+    $password = "Trompudo117";
     $dbname = "fototeca_uaa";
 
     $conn = new mysqli($servername, $username, $password, $dbname);

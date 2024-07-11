@@ -10,21 +10,23 @@ if (!isset($_SESSION['username'])) {
 // Definir las variables para los mensajes de éxito y error
 $success_message = '';
 $error_message = '';
+$success_mes ='';
+$fileC= " ";
 
-$imagenObra = '';
+
+$servername = "localhost";
+$username = "root";
+$password = "Trompudo117";
+$dbname = "fototeca_uaa";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+    if ($conn->connect_error) {
+        die("Error de conexión: " . $conn->connect_error);
+}
+
 
 // Procesar el formulario si se envió
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Conectar a la base de datos
-    $servername = "localhost";
-    $username = "root";
-    $password = "Sandia2016.!";
-    $dbname = "Fototeca_UAA";
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-    if ($conn->connect_error) {
-        die("Error de conexión: " . $conn->connect_error);
-    }
 
     // Obtener los datos del formulario
     $NInventario = $_POST["NInventario"];
@@ -63,18 +65,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     // Manejo de la imagen de oficio/vale
-    if (isset($_FILES['DocAsociada']) && $_FILES['DocAsociada']['error'] === UPLOAD_ERR_OK) {
-        $fileTmpPath = $_FILES['DocAsociada']['tmp_name'];
-        $fileType = $_FILES['DocAsociada']['type'];
-        $fileSize = $_FILES['DocAsociada']['size'];
-
+    if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['file']['tmp_name'];
+        $fileType = $_FILES['file']['type'];
+        $fileSize = $_FILES['file']['size'];
+        echo "si guerde archivo";
         if ($fileType == 'application/pdf' && $fileSize <= 10000000) { // 10 MB limit
-            $imagenContenido = file_get_contents($fileTmpPath);
-            $imagenContenido = $conn->real_escape_string($imagenContenido);
+            $fileC = file_get_contents($fileTmpPath);
+            $fileC = $conn->real_escape_string($fileC);
+            echo "Confirmacio final";
         } else {
             $error_message = "Archivo de oficio/vale no válido. Asegúrese de que es un PDF y no supera los 10 MB.";
         }
     }
+    
 
     // Preparar la consulta SQL
     $sql = "INSERT INTO Fototeca (NumeroInventario, ClaveTecnica, ProcesoFotografico, FondoColeccion, Formato, NumeroNegativoCopia, Tipo,
@@ -88,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     '$Autor', '$Autor_Primi', '$Agencia', '$Editor', '$Lema', 
                     '$Sello', '$Cuno', '$Firma', '$Etiqueta', '$Imprenta', '$Otro', 
                     '$TitOrigen', '$TitCatalo', '$TitSerie', '$TemaPrin', '$Descriptores', 
-                    '$Personajes', '$InscripOriginal', '$Conjunto', '$Anotaciones', '$NInterseccion', '$imagenContenido')";
+                    '$Personajes', '$InscripOriginal', '$Conjunto', '$Anotaciones', '$NInterseccion', '$fileC')";
 
     // Ejecutar la consulta SQL
     if ($conn->query($sql) === TRUE) {
@@ -98,7 +102,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Capturar el mensaje de error
         $error_message = "Error: " . $sql . "<br>" . $conn->error;
     }
-
     // Cerrar la conexión a la base de datos
     $conn->close();
 }
@@ -136,7 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php endif; ?>
 
     <div class="container form mt-5">
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
             <!-- Campos para la base de datos SeccionTecnica -->
             <div class="form-group">
                 <h3>Sección Técnica</h3>
@@ -254,8 +257,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="DocAsociada">Documentación Asociada:</label>
                 <textarea class="form-control" name="DocAsociada" id="DocAsociada" cols="30" rows="5"></textarea><br>
                 <div class="form-group">
-                    <label for="DocAsociada">Imagen de la obra (PDF)</label>
-                    <input type="file" class="form-control" id="DocAsociada" name="DocAsociada">
+                    <label for="file">Imagen de la obra (PDF)</label>
+                    <input type="file" name="file" id="file" accept="application/pdf" required>
                 </div>
             </div>
 

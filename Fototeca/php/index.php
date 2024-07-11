@@ -17,11 +17,11 @@ $error_message = ""; // Inicializar una variable para almacenar el mensaje de er
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Realizar la conexión a la base de datos
     $servername = "localhost";
-    $db_username = "root";
-    $db_password = "Sandia2016.!";
+    $username = "root";
+    $password = "Trompudo117";
     $dbname = "fototeca_uaa";
 
-    $conn = new mysqli($servername, $db_username, $db_password, $dbname);
+    $conn = new mysqli($servername, $username, $password, $dbname);
 
     if ($conn->connect_error) {
         die("Error de conexión: " . $conn->connect_error);
@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     // Consulta SQL para buscar el usuario en la base de datos
-    $sql = "SELECT * FROM Usuarios WHERE Usuario='$username' AND Contraseña='$password'";
+    $sql = "SELECT * FROM usuarios WHERE Usuario='$username' AND Contraseña='$password'";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
