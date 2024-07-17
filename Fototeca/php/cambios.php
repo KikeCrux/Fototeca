@@ -81,6 +81,7 @@ $conn->close();
                 <button class="btn btn-primary" type="submit">Buscar</button>
             </form>
         </div>
+        
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -109,7 +110,7 @@ $conn->close();
                         echo "<td>" . htmlspecialchars($row["Formato"]) . "</td>";
                         echo "<td>" . htmlspecialchars($row["NumeroNegativoCopia"]) . "</td>";
                         echo "<td>" . htmlspecialchars($row["Tipo"]) . "</td>";
-                        echo "<td>" . '<a href="verPDF.php? id=' . $row['ID_Tecnica'] . '">Ver PDF</a>'  . '</td>';
+                        echo "<td>" . '<a href="pdf.php?id=' . $row['ID_Tecnica'] . ' ">Abrir PDF</a></td>';
                         echo '<td><a href="procesar_cambios.php?id=' . $row["ID_Tecnica"] . '" class="btn btn-primary">Cambiar</a></td>';
                         echo "</tr>";
                     }
@@ -118,7 +119,7 @@ $conn->close();
                 }
                 ?>
             </tbody>
-        </table>
+            </table>
     </div>
 
     <script src="../resources/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

@@ -64,7 +64,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nuevo_conjunto = $_POST['Conjunto'];
     $nuevo_anotaciones = $_POST['Anotaciones'];
     $nuevo_numeros_interseccion = $_POST['NumerosInterseccion'];
-    $nuevo_documentacion_asociada = $_POST['DocumentacionAsociada'];
+    $fileC = null;
+
+    // Manejo de la imagen de oficio/vale
+    if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['file']['tmp_name'];
+        $fileType = $_FILES['file']['type'];
+        $fileSize = $_FILES['file']['size'];
+        echo "si guarde archivo";
+        if ($fileType == 'application/pdf' && $fileSize <= 10000000) { // 10 MB limit
+            $fileC = file_get_contents($fileTmpPath);
+            echo "Confirmacion final";
+        } else {
+            $error_message = "Archivo de oficio/vale no válido. Asegúrese de que es un PDF y no supera los 10 MB.";
+            echo $error_message;
+            exit();
+        }
+    }
 
     // Actualizar el registro en la tabla Fototeca
     $sql_update = "UPDATE Fototeca SET 
@@ -104,8 +120,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     DocumentacionAsociada = ?
                     WHERE ID_Tecnica = ?";
     $stmt_update = $conn->prepare($sql_update);
+
+    // Definir tipos de parámetros
+    $types = "sssssssssssssssssssssssssssssssssbi";
+
+    // Vinculación de parámetros
     $stmt_update->bind_param(
-        "ssssssssssssssssssssssssssssssssssi",
+        $types,
         $nuevo_numero_inventario,
         $nueva_clave_tecnica,
         $nuevo_proceso_fotografico,
@@ -139,9 +160,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $nuevo_conjunto,
         $nuevo_anotaciones,
         $nuevo_numeros_interseccion,
-        $nuevo_documentacion_asociada,
+        $fileC,
         $id_DatosGenerales
     );
+
+    // Enlace de parámetros BLOB (archivo PDF)
+    if ($fileC !== null) {
+        $stmt_update->send_long_data(33, $fileC);
+    }
 
     if ($stmt_update->execute()) {
         header("Location: cambios.php?success=true");
@@ -150,6 +176,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Error al actualizar el registro: " . $stmt_update->error;
     }
 }
+
 
 // Cerrar conexión
 $conn->close();
@@ -312,9 +339,9 @@ $conn->close();
                 <input type="text" class="form-control" id="NumerosInterseccion" name="NumerosInterseccion" value="<?php echo htmlspecialchars($row['NumerosInterseccion']); ?>">
             </div>
             <div class="form-group">
-                <label for="DocumentacionAsociada">Documentación Asociada:</label>
-                <input type="text" class="form-control" id="DocumentacionAsociada" name="DocumentacionAsociada" value="<?php echo htmlspecialchars($row['DocumentacionAsociada']); ?>">
-            </div>
+                    <label for="file">Imagen de la obra (PDF)</label>
+                    <input type="file" name="file" id="file" accept="application/pdf" required>
+                </div>
             <br>
             <button type="submit" class="btn btn-primary">Guardar cambios</button>
         </form>

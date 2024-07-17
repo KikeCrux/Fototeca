@@ -56,11 +56,11 @@ $conn->close();
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Datos Técnicos</title>
+    <title>Cambios</title>
     <link rel="stylesheet" href="../css/login.css">
-    <link rel="stylesheet" href="../css/tablas.css">
+    <link rel="stylesheet" href="../../css/tablas.css">
 </head>
 
 <body>
@@ -83,8 +83,8 @@ $conn->close();
                     <strong>Sección Técnica</strong>
                 </div>
                 <div class="card-body">
-                    <table class="table table-hover">
-                        <thead class="thead-light">
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
                                 <th>ID Técnica</th>
                                 <th>Número Inventario</th>

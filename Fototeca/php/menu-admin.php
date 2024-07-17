@@ -64,6 +64,11 @@
                     <a class="nav-link" href="consultas.php">Consultas</a>
                 </li>
             </ul>
+            <ul class="navbar-nav text-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="estadisticas.php">Estadisticas</a>
+                </li>
+            </ul>
         </div>
     </nav>
 </div>
